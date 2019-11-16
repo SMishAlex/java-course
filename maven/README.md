@@ -1,7 +1,5 @@
 # [Maven](https://github.com/qala-io/java-course/blob/master/docs/programme/maven.md)
 
-##Step 1
-
 * Dependencies and transitive dependencies [Introduction to the Dependency Mechanism](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)
     * nearest definition by default
     * `dependencyManagement` section to manage versions directly
@@ -29,6 +27,21 @@
     * default packaging type is 'jar'
     * [Package-specific Lifecycles](https://books.sonatype.com/mvnref-book/reference/lifecycle-sect-package-specific.html)
     * declare what you gonna have and how (executed during lifecycle plugins)
+   
+    
+* Plugins
+    * maven knows only how to read POM and download dependencies, all other work made by plugins.
+    * plugins has `goals` - kind of functions
+    * `goals` can be mapped to the lifecycle `phases`
+    * [Lifecycle phases](https://github.com/apache/maven/blob/master/maven-core/src/test/resources/META-INF/plexus/components.xml)
+    * [Default plugins binding](https://github.com/qala-io/java-course/blob/master/docs/programme/articles/maven-plugins.md)
+    * [It is possible to override plugin binding](https://stackoverflow.com/questions/7821152/disable-a-maven-plugin-defined-in-a-parent-pom)
+    * Effective POM contains lifecycle description as well
+    
+* Debugging
+    * You [can](https://maven.apache.org/surefire/maven-surefire-plugin/examples/debugging.html) debug your tests with `maven-surefire-plugin`
+    * `mvnDebug` allows debug maven core or plugins
+    * (to see maven plugin code in idea you can open it's POM and export maven project %))
 
 ***
 Refs:
