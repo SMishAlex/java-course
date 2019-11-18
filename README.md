@@ -1,2 +1,2 @@
 # Java-course
-### 1. [Maven](./maven/README.md) 
+### 1. [Maven](./maven) 
