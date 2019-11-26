@@ -53,11 +53,10 @@
        * plugin configuration
        * resources
     * Multi-module - if you'd like to cascade execution of lifecycle, phase, or even goal on submodules recursively.
-     ```
-        if a Maven command is invoked against the parent project, that Maven command will then be executed to the parent's modules as well. To do Project Aggregation, you must do the following:
-            * Change the parent POMs packaging to the value "pom".
-            * Specify in the parent POM the directories of its modules (children POMs).
-     ```
+    
+        > if a Maven command is invoked against the parent project, that Maven command will then be executed to the parent's modules as well. To do Project Aggregation, you must do the following:
+        >     * Change the parent POMs packaging to the value "pom".
+        >     * Specify in the parent POM the directories of its modules (children POMs).
     * By default, Maven looks for the parent POM first at project’s root, then the local repository, and lastly in the remote repository. If parent POM file is not located in any other place, then you can use code tag. This relative path shall be relative to project root.
     ```$xml
    <parent>
@@ -87,7 +86,22 @@
         * `--fail-fast` - the default behavior - whenever a module build fails, stop the overall build immediately
         * `--fail-at-end` - if a particular module build fails, continue the rest of the reactor and report all failed modules at the end instead
         * `--non-recursive` - do not use a reactor build, even if the current project declares modules and just build the project in the current directory
-  
+#### Dependencies
+
+-| compile | provided | runtime | test
+:---:|:---:|:---:|:---:|:---:
+Available during compilation|V|V|-|-
+Included into final binary|V|-|V|-
+Available during test compilation and execution|V|V|V|V
+
+lib|scope
+:---:|:---:
+JDBC Drivers| `runtime`
+JUnit, TestNG, Mockito | `test`
+slf4j-api| `compile`
+slf4j-binding | [can be `runtime`](https://dzone.com/articles/adding-slf4j-your-maven)
+lombok|[ should be `provided`](https://stackoverflow.com/questions/29385921/maven-scope-for-lombok-compile-vs-provided)
+
 ***
 Refs:
 * [Java Professionals Course](https://github.com/qala-io/java-course)
