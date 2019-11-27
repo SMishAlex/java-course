@@ -102,6 +102,17 @@ slf4j-api| `compile`
 slf4j-binding | [can be `runtime`](https://dzone.com/articles/adding-slf4j-your-maven)
 lombok|[ should be `provided`](https://stackoverflow.com/questions/29385921/maven-scope-for-lombok-compile-vs-provided)
 
+#### [Classifier and Type:](https://maven.apache.org/pom.html)
+>Classifier:
+>
+>The classifier distinguishes artifacts that were built from the same POM but differ in content. It is some optional and arbitrary string that - if present - is appended to the artifact name just after the version number.
+>As a motivation for this element, consider for example a project that offers an artifact targeting JRE 1.5 but at the same time also an artifact that still supports JRE 1.4. The first artifact could be equipped with the classifier jdk15 and the second one with jdk14 such that clients can choose which one to use.
+>
+>Another common use case for classifiers is to attach secondary artifacts to the project's main artifact. If you browse the Maven central repository, you will notice that the classifiers sources and javadoc are used to deploy the project source code and API docs along with the packaged class files.
+
+>Type:
+>
+>Corresponds to the chosen dependency type. This defaults to jar. While it usually represents the extension on the filename of the dependency, that is not always the case: a type can be mapped to a different extension and a classifier. The type often corresponds to the packaging used, though this is also not always the case. Some examples are jar, ejb-client and test-jar: see default artifact handlers for a list. New types can be defined by plugins that set extensions to true, so this is not a complete list.
 ***
 Refs:
 * [Java Professionals Course](https://github.com/qala-io/java-course)
