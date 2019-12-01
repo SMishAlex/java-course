@@ -12,7 +12,8 @@ public class FailingTest {
     @Test
     @SuppressWarnings("all")
     public void strangeFailure() throws Exception {
-        InputStream file = ClassLoader.getSystemResourceAsStream("myresource.txt");
-        assertEquals(file.read(), 49);
+        try (InputStream file = ClassLoader.getSystemResourceAsStream("myresource.txt")) {
+            assertEquals(file.read(), 49);
+        };
     }
 }
