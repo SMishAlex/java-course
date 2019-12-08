@@ -10,4 +10,22 @@
         <servlet-name>hello</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+
+    <filter>
+        <filter-name>preProcessFilter</filter-name>
+        <filter-class>com.epam.javacource.sid.webapp.task1.PreProcessFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>postProcessFilter</filter-name>
+        <filter-class>com.epam.javacource.sid.webapp.task1.PostProcessFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>preProcessFilter</filter-name>
+        <url-pattern>*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>postProcessFilter</filter-name>
+        <url-pattern>*</url-pattern>
+    </filter-mapping>
 </web-app>

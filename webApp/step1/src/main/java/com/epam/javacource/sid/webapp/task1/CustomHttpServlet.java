@@ -13,6 +13,5 @@ public class CustomHttpServlet extends HttpServlet {
         resp.setStatus(200);
         PrintWriter writer = resp.getWriter();
         writer.println("Hello servlet world!");
-        writer.close();
     }
 }
