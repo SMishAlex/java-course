@@ -1,0 +1,60 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>server</artifactId>
+    <version>1.0</version>
+    <packaging>war</packaging>
+    <parent>
+        <groupId>com.epam.java-cource.sid.webapp</groupId>
+        <artifactId>step3</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <configuration>
+                    <serverXml>
+                        ${project.basedir}/tomcat/conf/server.xml
+                    </serverXml>
+                    <warRunDependencies>
+                        <warRunDependency>
+                            <dependency>
+                                <groupId>com.epam.javacource.sid.webapp</groupId>
+                                <artifactId>server</artifactId>
+                                <version>1.0</version>
+                                <type>war</type>
+                            </dependency>
+                            <contextPath>/server</contextPath>
+                        </warRunDependency>
+                    </warRunDependencies>
+                    <webapps>
+                        <webapp>
+
+                        </webapp>
+                    </webapps>
+                    <warFile>target/server-1.0.war</warFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
