@@ -12,7 +12,16 @@ public class CustomHttpServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setStatus(200);
 //        System.out.println(Thread.activeCount());
+        reallyHardWork();
         PrintWriter writer = resp.getWriter();
         writer.println("Hello servlet world!");
+    }
+
+    private void reallyHardWork() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -42,6 +42,7 @@ public class RestClient {
     private static void callGetMethod(String address) {
         StringBuilder strBuf = new StringBuilder();
         HttpURLConnection conn = null;
+        int failedCalls = 0;
         try {
             URL url = new URL(address);
             boolean processed = false;
@@ -54,7 +55,7 @@ public class RestClient {
                     processed = conn.getResponseCode() == 200;
 
                 } catch (Exception ignored) {
-
+                    failedCalls ++;
                 }
             } while (!processed);
 
@@ -72,6 +73,9 @@ public class RestClient {
             if (conn != null) {
                 conn.disconnect();
             }
+        }
+        if (failedCalls != 0) {
+            System.err.println(failedCalls);
         }
     }
 }
