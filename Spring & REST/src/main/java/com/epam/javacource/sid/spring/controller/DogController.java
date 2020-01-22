@@ -1,8 +1,11 @@
 package com.epam.javacource.sid.spring.controller;
 
 import com.epam.javacource.sid.spring.model.DogDto;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,7 +26,10 @@ public class DogController {
     }
 
     @PostMapping
-    public DogDto createDog(@RequestBody DogDto dog) {
+    public DogDto createDog(@Valid @RequestBody DogDto dog, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException(bindingResult.toString());
+        }
         Integer id = idSequence.incrementAndGet();
         dog.setId(id);
         inMemoryDogs.put(id, dog);
@@ -31,7 +37,10 @@ public class DogController {
     }
 
     @PutMapping("/{id}")
-    public DogDto updateDog(@PathVariable("id") Integer id, @RequestBody DogDto dog) {
+    public DogDto updateDog(@PathVariable("id") Integer id, @Valid @RequestBody DogDto dog, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException(bindingResult.toString());
+        }
         inMemoryDogs.put(id, dog);
         return dog;
     }

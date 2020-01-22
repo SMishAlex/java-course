@@ -4,7 +4,8 @@
     http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController"/>
-    <mvc:annotation-driven>
+    <bean id="globalValidator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+    <mvc:annotation-driven validator="globalValidator">
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
         </mvc:message-converters>

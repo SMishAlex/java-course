@@ -68,4 +68,16 @@ public class DogControllerTest {
 
         Assert.assertEquals(getDog, updatedDog1Response);
     }
+
+    @Test
+    public void testNegativeCreatingDog() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(new DogDto(null, "Dog1Name", LocalDate.now(), -10L, 10L),
+                        ObjectMapperType.JACKSON_2)
+                .when()
+                .post(HOST + "/dog")
+                .then()
+                .statusCode(500);
+    }
 }

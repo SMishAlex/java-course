@@ -1,13 +1,21 @@
 package com.epam.javacource.sid.spring.model;
 
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class DogDto {
+    @Positive
     private Integer id;
+    @Size(max = 100, min = 1)
     private String name;
+    @Past
     private LocalDate dateOfBirth;
+    @Positive
     private Long height;
+    @Positive
     private Long weight;
 
     public DogDto() {
