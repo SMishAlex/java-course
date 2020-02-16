@@ -1,5 +1,7 @@
 package com.epam.javacource.sid.spring.controller;
 
+import com.epam.javacource.sid.spring.exceptions.BeanValidationException;
+import com.epam.javacource.sid.spring.exceptions.ResourceNotFoundException;
 import com.epam.javacource.sid.spring.model.DogDto;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +24,13 @@ public class DogController {
     @GetMapping("/{id}")
     public DogDto getDog(@PathVariable("id") Integer id) {
         return ofNullable(inMemoryDogs.get(id))
-                .orElseThrow(() -> new RuntimeException("Seems like your dog is gone."));
+                .orElseThrow(() -> new ResourceNotFoundException("Seems like your dog is gone."));
     }
 
     @PostMapping
     public DogDto createDog(@Valid @RequestBody DogDto dog, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new ValidationException(bindingResult.toString());
+            throw new BeanValidationException(bindingResult.toString());
         }
         Integer id = idSequence.incrementAndGet();
         dog.setId(id);
@@ -39,8 +41,9 @@ public class DogController {
     @PutMapping("/{id}")
     public DogDto updateDog(@PathVariable("id") Integer id, @Valid @RequestBody DogDto dog, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new ValidationException(bindingResult.toString());
+            throw new BeanValidationException(bindingResult.toString());
         }
+        dog.setId(id);
         inMemoryDogs.put(id, dog);
         return dog;
     }
