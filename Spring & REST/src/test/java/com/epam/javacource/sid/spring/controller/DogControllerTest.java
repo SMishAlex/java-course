@@ -3,6 +3,8 @@ package com.epam.javacource.sid.spring.controller;
 import com.epam.javacource.sid.spring.model.DogDto;
 import io.restassured.http.ContentType;
 import io.restassured.mapper.ObjectMapperType;
+import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import org.springframework.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -16,23 +18,25 @@ public class DogControllerTest {
     private final static String HOST = "http://localhost:8080";
 
     private DogDto getDog1() {
-        return new DogDto(null, "Dog1Name", LocalDate.now(), 10L, 10L);
+        return new DogDto(null, "Dog1Name", LocalDate.now().minusDays(1), 10L, 10L);
     }
 
     private DogDto getUpdatedDog(Integer dogId) {
-        return new DogDto(dogId, "Updated Dog1Name", LocalDate.now(), 15L, 15L);
+        return new DogDto(dogId, "Updated Dog1Name", LocalDate.now().minusDays(1), 15L, 15L);
     }
 
 
     @Test
     public void testCreatingDog() {
-        given()
+        ValidatableResponse response = given()
                 .contentType(ContentType.JSON)
                 .body(getDog1(), ObjectMapperType.JACKSON_2)
                 .when()
                 .post(HOST + "/dog")
-                .then()
-                .statusCode(HttpStatus.OK.value());
+                .then();
+
+        System.out.println(response.extract().body().asString());
+        response.statusCode(HttpStatus.OK.value());
     }
 
     @Test
@@ -52,10 +56,12 @@ public class DogControllerTest {
 
     @Test
     public void testUpdatingCreatedDogById() {
-        DogDto dog1 = given()
+        Response postResponse = given()
                 .contentType(ContentType.JSON)
                 .body(getDog1(), ObjectMapperType.JACKSON_2)
-                .post(HOST + "/dog")
+                .post(HOST + "/dog");
+        System.out.println(postResponse.asString());
+        DogDto dog1 = postResponse
                 .as(DogDto.class);
 
 
