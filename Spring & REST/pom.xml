@@ -5,6 +5,7 @@
     <version>1.0</version>
     <properties>
         <jackson-version>2.10.1</jackson-version>
+        <spring.version>5.2.2.RELEASE</spring.version>
     </properties>
     <packaging>war</packaging>
 
@@ -13,7 +14,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>5.2.2.RELEASE</version>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
