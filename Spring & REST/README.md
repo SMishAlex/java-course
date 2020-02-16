@@ -18,5 +18,20 @@
 
 4. Multipurpose Internet Mail Extensions or [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types)
 
+5. Validations
+    Checks found: 11 out of 18
+    
+    You used html tags
+    Basic Sql injection
+    Non ASCII
+    Minimum value
+    Space values at the beginning
+    Space values at the end
+    More than maximum values
+    Other chars then alphabetic
+    Empty value
+    Space in the middle
+    Average value
+
 
 
