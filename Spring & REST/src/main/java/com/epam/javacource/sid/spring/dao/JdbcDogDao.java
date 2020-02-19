@@ -42,10 +42,11 @@ public class JdbcDogDao implements Dao<DogDto> {
                     entity.getWeight()),
                     Statement.RETURN_GENERATED_KEYS);
 
-            final ResultSet generatedKeys = statement.getGeneratedKeys();
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
 
-            if (generatedKeys.next()) {
-                entity.setId(generatedKeys.getInt(1));
+                if (generatedKeys.next()) {
+                    entity.setId(generatedKeys.getInt(1));
+                }
             }
             return entity;
         } catch (SQLException e) {
