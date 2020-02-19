@@ -1,5 +1,6 @@
 package com.epam.javacource.sid.spring.controller;
 
+import com.epam.javacource.sid.spring.dao.DogDao;
 import com.epam.javacource.sid.spring.model.DogDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.CharEncoding;
@@ -25,8 +26,8 @@ public class MockMvcDogControllerTest {
 
     @BeforeMethod
     public void prepareMockMvc() {
-        MockMvcBuilders.standaloneSetup(DogController.class);
-        mockMvc = MockMvcBuilders.standaloneSetup(DogController.class).build();
+        DogController dogController = new DogController(new DogDao());
+        mockMvc = MockMvcBuilders.standaloneSetup(dogController).build();
         objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
 
