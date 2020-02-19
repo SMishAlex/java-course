@@ -15,7 +15,7 @@ import static io.restassured.RestAssured.given;
 
 public class DogControllerTest {
 
-    private final static String HOST = "http://localhost:8080";
+    private final static String HOST = "http://localhost:8888";
 
     private DogDto getDog1() {
         return new DogDto(null, "Dog1Name", LocalDate.now().minusDays(1), 10L, 10L);
@@ -45,7 +45,7 @@ public class DogControllerTest {
                 .contentType(ContentType.JSON)
                 .body(getDog1(), ObjectMapperType.JACKSON_2)
                 .post(HOST + "/dog")
-                .as(DogDto.class);
+                .as(DogDto.class, ObjectMapperType.JACKSON_2);
 
         DogDto getDog = given()
                 .get(HOST + "/dog/{id}", dog1.getId())
@@ -62,7 +62,7 @@ public class DogControllerTest {
                 .post(HOST + "/dog");
         System.out.println(postResponse.asString());
         DogDto dog1 = postResponse
-                .as(DogDto.class);
+                .as(DogDto.class, ObjectMapperType.JACKSON_2);
 
 
         DogDto updatedDog1 = getUpdatedDog(dog1.getId());

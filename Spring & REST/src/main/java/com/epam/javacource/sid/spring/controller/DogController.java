@@ -1,6 +1,6 @@
 package com.epam.javacource.sid.spring.controller;
 
-import com.epam.javacource.sid.spring.dao.DogDao;
+import com.epam.javacource.sid.spring.dao.Dao;
 import com.epam.javacource.sid.spring.exceptions.BeanValidationException;
 import com.epam.javacource.sid.spring.model.DogDto;
 import org.springframework.validation.BindingResult;
@@ -12,9 +12,9 @@ import javax.validation.Valid;
 @RequestMapping("/dog")
 public class DogController {
 
-    private final DogDao dogDao;
+    private final Dao<DogDto> dogDao;
 
-    public DogController(DogDao dogDao) {
+    public DogController(Dao<DogDto> dogDao) {
         this.dogDao = dogDao;
     }
 

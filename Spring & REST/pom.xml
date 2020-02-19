@@ -6,6 +6,7 @@
     <properties>
         <jackson-version>2.10.1</jackson-version>
         <spring.version>5.2.2.RELEASE</spring.version>
+        <javax.el.version>3.0.0</javax.el.version>
     </properties>
     <packaging>war</packaging>
 
@@ -56,19 +57,28 @@
             <version>2.0.1.Final</version>
         </dependency>
         <dependency>
-            <groupId>org.hibernate.validator</groupId>
+            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.1.0.Final</version>
+            <version>5.4.3.Final</version>
         </dependency>
         <dependency>
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
-            <version>3.0.0</version>
+            <version>${javax.el.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.el</artifactId>
-            <version>3.0.0</version>
+            <version>${javax.el.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
         </dependency>
     </dependencies>
 
@@ -79,6 +89,7 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
+                    <port>8888</port>
                     <path>/</path>
                 </configuration>
             </plugin>

@@ -3,11 +3,19 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.DogDao"/>
+
+    <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
+        <constructor-arg ref="dataSource"/>
+    </bean>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
         <constructor-arg ref="dogDao"/>
     </bean>
     <bean id="globalValidator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+    <bean id="dataSource" class="org.h2.jdbcx.JdbcDataSource">
+        <property name="url" value="jdbc:h2:~/dog"/>
+        <property name="user" value="dog"/>
+        <property name="password" value="dog"/>
+    </bean>
     <mvc:annotation-driven validator="globalValidator">
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>

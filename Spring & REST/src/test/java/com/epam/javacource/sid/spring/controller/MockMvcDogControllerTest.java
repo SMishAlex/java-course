@@ -1,9 +1,10 @@
 package com.epam.javacource.sid.spring.controller;
 
-import com.epam.javacource.sid.spring.dao.DogDao;
+import com.epam.javacource.sid.spring.dao.JdbcDogDao;
 import com.epam.javacource.sid.spring.model.DogDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.CharEncoding;
+import org.h2.jdbcx.JdbcDataSource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,7 +27,11 @@ public class MockMvcDogControllerTest {
 
     @BeforeMethod
     public void prepareMockMvc() {
-        DogController dogController = new DogController(new DogDao());
+        JdbcDataSource ds = new JdbcDataSource();
+        ds.setURL("jdbc:h2:~/dog");
+        ds.setUser("dog");
+        ds.setPassword("dog");
+        DogController dogController = new DogController(new JdbcDogDao(ds));
         mockMvc = MockMvcBuilders.standaloneSetup(dogController).build();
         objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
