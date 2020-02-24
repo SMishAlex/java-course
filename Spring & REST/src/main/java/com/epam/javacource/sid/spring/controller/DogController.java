@@ -1,9 +1,7 @@
 package com.epam.javacource.sid.spring.controller;
 
 import com.epam.javacource.sid.spring.dao.Dao;
-import com.epam.javacource.sid.spring.exceptions.BeanValidationException;
 import com.epam.javacource.sid.spring.model.DogDto;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,18 +22,12 @@ public class DogController {
     }
 
     @PostMapping
-    public DogDto createDog(@Valid @RequestBody DogDto dog, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new BeanValidationException(bindingResult.toString());
-        }
+    public DogDto createDog(@Valid @RequestBody DogDto dog) {
         return dogDao.create(dog);
     }
 
     @PutMapping("/{id}")
-    public DogDto updateDog(@PathVariable("id") Integer id, @Valid @RequestBody DogDto dog, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new BeanValidationException(bindingResult.toString());
-        }
+    public DogDto updateDog(@PathVariable("id") Integer id, @Valid @RequestBody DogDto dog) {
         dog.setId(id);
         return dogDao.update(dog);
     }
