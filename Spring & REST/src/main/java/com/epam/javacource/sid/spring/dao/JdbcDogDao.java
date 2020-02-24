@@ -6,10 +6,7 @@ import com.epam.javacource.sid.spring.model.DogDto;
 import org.h2.jdbcx.JdbcDataSource;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class JdbcDogDao implements Dao<DogDto> {
 
@@ -18,13 +15,14 @@ public class JdbcDogDao implements Dao<DogDto> {
     public JdbcDogDao(JdbcDataSource ds) {
         dataSource = ds;
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS DOGS("
-                    + "ID integer AUTO_INCREMENT PRIMARY KEY,"
-                    + "name VARCHAR(100) NOT NULL CHECK (length(name) > 0),"
-                    + "dateOfBirth DATE,"
-                    + "height INTEGER NOT NULL CHECK (height > 0),"
-                    + "weight INTEGER NOT NULL CHECK (weight > 0))");
+             PreparedStatement preparedStatement =
+                     connection.prepareStatement("CREATE TABLE IF NOT EXISTS DOGS("
+                             + "ID integer AUTO_INCREMENT PRIMARY KEY,"
+                             + "name VARCHAR(100) NOT NULL CHECK (length(name) > 0),"
+                             + "dateOfBirth DATE,"
+                             + "height INTEGER NOT NULL CHECK (height > 0),"
+                             + "weight INTEGER NOT NULL CHECK (weight > 0))")) {
+            preparedStatement.execute();
         } catch (SQLException e) {
             throw new DatabaseCommunicationException("Can't initiate database", e);
         }
@@ -33,16 +31,17 @@ public class JdbcDogDao implements Dao<DogDto> {
     @Override
     public DogDto create(DogDto entity) {
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(String.format(
-                    "INSERT INTO DOGS (NAME, DATEOFBIRTH, HEIGHT, WEIGHT) VALUES ( '%s', '%s', %s, %s )",
-                    entity.getName(),
-                    entity.getDateOfBirth(),
-                    entity.getHeight(),
-                    entity.getWeight()),
-                    Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement preparedStatement =
+                     connection.prepareStatement("INSERT INTO DOGS (NAME, DATEOFBIRTH, HEIGHT, WEIGHT) "
+                             + "VALUES ( ?, ?, ?, ? )", Statement.RETURN_GENERATED_KEYS)) {
 
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+            preparedStatement.setString(1, entity.getName());
+            preparedStatement.setDate(2, Date.valueOf(entity.getDateOfBirth()));
+            preparedStatement.setLong(3, entity.getHeight());
+            preparedStatement.setLong(4, entity.getWeight());
+            preparedStatement.executeUpdate();
+
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
 
                 if (generatedKeys.next()) {
                     entity.setId(generatedKeys.getInt(1));
@@ -57,10 +56,12 @@ public class JdbcDogDao implements Dao<DogDto> {
     @Override
     public DogDto getOne(Integer id) {
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            final ResultSet resultSet = statement.executeQuery(String.format(
-                    "SELECT ID, NAME, DATEOFBIRTH, HEIGHT, WEIGHT FROM DOGS WHERE ID = %d",
-                    id));
+             PreparedStatement preparedStatement =
+                     connection.prepareStatement(
+                             "SELECT ID, NAME, DATEOFBIRTH, HEIGHT, WEIGHT FROM DOGS WHERE ID = ?")) {
+
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 return new DogDto(
@@ -81,20 +82,21 @@ public class JdbcDogDao implements Dao<DogDto> {
     @Override
     public DogDto update(DogDto entity) {
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(String.format(
-                    "UPDATE DOGS\n"
-                            + "SET\n"
-                            + "    NAME = '%s',\n"
-                            + "    DATEOFBIRTH = '%s',\n"
-                            + "    HEIGHT = %s,\n"
-                            + "    WEIGHT = %s\n"
-                            + "WHERE ID = %s",
-                    entity.getName(),
-                    entity.getDateOfBirth(),
-                    entity.getHeight(),
-                    entity.getWeight(),
-                    entity.getId()));
+             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE DOGS\n"
+                     + "SET\n"
+                     + "    NAME = ?,\n"
+                     + "    DATEOFBIRTH = ?,\n"
+                     + "    HEIGHT = ?,\n"
+                     + "    WEIGHT = ?\n"
+                     + "WHERE ID = ?")) {
+
+            preparedStatement.setString(1, entity.getName());
+            preparedStatement.setDate(2, Date.valueOf(entity.getDateOfBirth()));
+            preparedStatement.setLong(3, entity.getHeight());
+            preparedStatement.setLong(4, entity.getWeight());
+            preparedStatement.setInt(5, entity.getId());
+
+            preparedStatement.executeUpdate();
 
             return entity;
         } catch (SQLException e) {
