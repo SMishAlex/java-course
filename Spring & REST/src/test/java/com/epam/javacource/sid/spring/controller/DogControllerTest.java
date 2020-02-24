@@ -85,13 +85,17 @@ public class DogControllerTest {
     public void testNegativeCreatingDog() {
         DogDto validDog = getDog1();
         validDog.setHeight(-10L);
-        given()
+        final ValidatableResponse response = given()
                 .contentType(ContentType.JSON)
                 .body(validDog,
                         ObjectMapperType.JACKSON_2)
                 .when()
                 .post(HOST + "/dog")
-                .then()
+                .then();
+
+        System.out.println(response.extract().body().asString());
+
+        response
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }

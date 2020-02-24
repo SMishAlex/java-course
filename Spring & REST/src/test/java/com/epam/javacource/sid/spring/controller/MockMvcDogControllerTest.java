@@ -1,25 +1,33 @@
 package com.epam.javacource.sid.spring.controller;
 
-import com.epam.javacource.sid.spring.dao.JdbcDogDao;
 import com.epam.javacource.sid.spring.model.DogDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.CharEncoding;
-import org.h2.jdbcx.JdbcDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Test
-public class MockMvcDogControllerTest {
+@ContextConfiguration(locations = "file:**/spring-mvc-config.xml")
+@WebAppConfiguration
+public class MockMvcDogControllerTest extends AbstractTestNGSpringContextTests {
+
+    @Autowired
+    private WebApplicationContext wac;
 
     private ObjectMapper objectMapper;
 
@@ -27,50 +35,44 @@ public class MockMvcDogControllerTest {
 
     @BeforeMethod
     public void prepareMockMvc() {
-        JdbcDataSource ds = new JdbcDataSource();
-        ds.setURL("jdbc:h2:~/dog");
-        ds.setUser("dog");
-        ds.setPassword("dog");
-        DogController dogController = new DogController(new JdbcDogDao(ds));
-        mockMvc = MockMvcBuilders.standaloneSetup(dogController).build();
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(wac)
+                .alwaysDo(print())
+                .build();
+
         objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-
     }
 
-    @Test
-    public void testName() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/dog/{id}", 1))
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    private DogDto getDog1() {
+    private DogDto getValidDog() {
         return new DogDto(null, "Dog1Name", LocalDate.now().minusDays(1), 10L, 10L);
     }
 
-    private DogDto getUpdatedDog(Integer dogId) {
-        return new DogDto(dogId, "Updated Dog1Name", LocalDate.now().minusDays(1), 15L, 15L);
+    private DogDto getUpdatedDog(DogDto currentDogState) {
+        return new DogDto(currentDogState.getId(), currentDogState.getName() + "Updated",
+                currentDogState.getDateOfBirth().minusDays(1),
+                currentDogState.getHeight() + 15L,
+                currentDogState.getWeight() + 15L);
     }
 
-
     @Test
-    public void testCreatingDog() throws Exception {
+    public void whenCreatingValidDogNoExceptionsExpected() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/dog")
                 .characterEncoding(CharEncoding.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getDog1())))
-                .andDo(MockMvcResultHandlers.print())
+                .content(objectMapper.writeValueAsString(getValidDog())))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testGettingCreatedDogById() throws Exception {
-        String postResponse = createDog(getDog1());
+    public void whenGettingJustCreatedDogByIdTheBodyIsTheSame() throws Exception {
+        String postResponse = createDog(getValidDog());
 
         DogDto dog1 = objectMapper.readValue(postResponse, DogDto.class);
 
         String getResponse = mockMvc.perform(MockMvcRequestBuilders.get("/dog/{dogId}", dog1.getId()))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -82,24 +84,24 @@ public class MockMvcDogControllerTest {
                 .characterEncoding(CharEncoding.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dogDto)))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
     }
 
     @Test
-    public void testUpdatingCreatedDogById() throws Exception {
-        String postResponse = createDog(getDog1());
+    public void whenUpdateDogAllFieldsInResponseAreUpdated() throws Exception {
+        String postResponse = createDog(getValidDog());
 
         DogDto dog1 = objectMapper.readValue(postResponse, DogDto.class);
 
-        DogDto updatedDog1 = getUpdatedDog(dog1.getId());
+        DogDto updatedDog1 = getUpdatedDog(dog1);
 
         String updatedDogResponseContent = mockMvc.perform(MockMvcRequestBuilders.put("/dog/{id}", dog1.getId())
                 .characterEncoding(CharEncoding.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatedDog1)))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -110,13 +112,13 @@ public class MockMvcDogControllerTest {
     }
 
     @Test
-    public void testNegativeCreatingDog() throws Exception {
-        DogDto validDog = getDog1();
+    public void whenCreateInvalidDogExceptionProvided() throws Exception {
+        DogDto validDog = getValidDog();
         validDog.setHeight(-10L);
         mockMvc.perform(MockMvcRequestBuilders.post("/dog")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validDog)))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().is4xxClientError());
     }
 }
