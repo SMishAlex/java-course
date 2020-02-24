@@ -1,6 +1,7 @@
 package com.epam.javacource.sid.spring.controller;
 
 import com.epam.javacource.sid.spring.dao.Dao;
+import com.epam.javacource.sid.spring.exceptions.DatabaseCommunicationException;
 import com.epam.javacource.sid.spring.model.DogDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,15 +35,7 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
         dogDao.create(validDog);
     }
 
-    @Test
-    public void whenDogIdIsNegativeExceptionsProvided() {
-        DogDto validDog = getValidDog();
-        validDog.setId(-1);
-
-        dogDao.create(validDog);
-    }
-
-    @Test
+    @Test(expectedExceptions = {DatabaseCommunicationException.class})
     public void whenDogHeightIsZeroExceptionsProvided() {
         DogDto validDog = getValidDog();
         validDog.setHeight(0L);
@@ -50,7 +43,7 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
         dogDao.create(validDog);
     }
 
-    @Test
+    @Test(expectedExceptions = {DatabaseCommunicationException.class})
     public void whenDogHeightIsNegativeExceptionsProvided() {
         DogDto validDog = getValidDog();
         validDog.setHeight(-1L);
@@ -59,7 +52,17 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
     }
 
     @Test
-    public void whenDogNameIsTooLongExceptionsProvided() {
+    //@Test(expectedExceptions = {DatabaseCommunicationException.class})
+    public void whenDogNameContainsSqlInjectionWeAreSad() {
+        DogDto validDog = getValidDog();
+        String sqlInjectionName = "\"' blah";
+        validDog.setName(sqlInjectionName);
+
+        dogDao.create(validDog);
+    }
+
+    @Test
+    public void whenDogNameIsLongButNotTooLongWeAreFine() {
         DogDto validDog = getValidDog();
         String veryLongName = Strings.repeat("A", 100);
         validDog.setName(veryLongName);
@@ -67,18 +70,19 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
         dogDao.create(validDog);
     }
 
-    @Test
-    public void whenDogNameIsEmptyExceptionsProvided() {
+    @Test(expectedExceptions = {DatabaseCommunicationException.class})
+    public void whenDogNameIsTooLongExceptionsProvided() {
         DogDto validDog = getValidDog();
-        validDog.setName("");
+        String veryLongName = Strings.repeat("A", 101);
+        validDog.setName(veryLongName);
 
         dogDao.create(validDog);
     }
 
-    @Test
-    public void whenDogDOBInFutureExceptionsProvided() {
+    @Test(expectedExceptions = {DatabaseCommunicationException.class})
+    public void whenDogNameIsEmptyExceptionsProvided() {
         DogDto validDog = getValidDog();
-        validDog.setDateOfBirth(LocalDate.now().plusDays(1));
+        validDog.setName("");
 
         dogDao.create(validDog);
     }

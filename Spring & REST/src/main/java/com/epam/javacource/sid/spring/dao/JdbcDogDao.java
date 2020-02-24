@@ -21,10 +21,10 @@ public class JdbcDogDao implements Dao<DogDto> {
              Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS DOGS("
                     + "ID integer AUTO_INCREMENT PRIMARY KEY,"
-                    + "name VARCHAR(100),"
+                    + "name VARCHAR(100) NOT NULL CHECK (length(name) > 0),"
                     + "dateOfBirth DATE,"
-                    + "height INTEGER,"
-                    + "weight INTEGER)");
+                    + "height INTEGER NOT NULL CHECK (height > 0),"
+                    + "weight INTEGER NOT NULL CHECK (weight > 0))");
         } catch (SQLException e) {
             throw new DatabaseCommunicationException("Can't initiate database", e);
         }
