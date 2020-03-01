@@ -49,7 +49,7 @@ ssl = false				# (change requires restart)
     </details>
     <details>
     <blockquote>
-    ~~~
+~~~
      PostgreSQL
          Type: Parse
          Length: 114
@@ -60,7 +60,7 @@ ssl = false				# (change requires restart)
              Type OID: 0
              Type OID: 20
              Type OID: 20
-    ~~~
+~~~
     </blockquote>
     </details>
     <details>
