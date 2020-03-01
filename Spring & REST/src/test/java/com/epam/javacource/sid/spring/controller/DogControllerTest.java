@@ -15,7 +15,7 @@ import static io.restassured.RestAssured.given;
 
 public class DogControllerTest {
 
-    private final static String HOST = "http://localhost:8888";
+    private final static String HOST = "http://localhost:8081";
 
     private DogDto getDog1() {
         return new DogDto(null, "Dog1Name", LocalDate.now().minusDays(1), 10L, 10L);

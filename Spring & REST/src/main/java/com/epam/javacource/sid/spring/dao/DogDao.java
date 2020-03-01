@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Optional.ofNullable;
 
-@Repository
 public class DogDao implements Dao<DogDto> {
 
     static Map<Integer, DogDto> inMemoryDogs = new ConcurrentHashMap<>();

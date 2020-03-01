@@ -13,7 +13,7 @@ import org.testng.util.Strings;
 import java.time.LocalDate;
 
 @Test
-@ContextConfiguration(locations = "file:**/spring-mvc-config.xml")
+@ContextConfiguration(locations = "classpath:spring-mvc-config.xml")
 @WebAppConfiguration
 public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
 

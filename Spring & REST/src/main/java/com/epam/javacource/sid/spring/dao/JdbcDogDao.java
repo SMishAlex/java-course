@@ -3,7 +3,6 @@ package com.epam.javacource.sid.spring.dao;
 import com.epam.javacource.sid.spring.exceptions.DatabaseCommunicationException;
 import com.epam.javacource.sid.spring.exceptions.ResourceNotFoundException;
 import com.epam.javacource.sid.spring.model.DogDto;
-import org.h2.jdbcx.JdbcDataSource;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -12,12 +11,15 @@ public class JdbcDogDao implements Dao<DogDto> {
 
     private final DataSource dataSource;
 
-    public JdbcDogDao(JdbcDataSource ds) {
+    public JdbcDogDao(DataSource ds) {
         dataSource = ds;
+    }
+
+    public void initDB() {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement =
                      connection.prepareStatement("CREATE TABLE IF NOT EXISTS DOGS("
-                             + "ID integer AUTO_INCREMENT PRIMARY KEY,"
+                             + "ID SERIAL PRIMARY KEY,"
                              + "name VARCHAR(100) NOT NULL CHECK (length(name) > 0),"
                              + "dateOfBirth DATE,"
                              + "height INTEGER NOT NULL CHECK (height > 0),"
@@ -49,6 +51,7 @@ public class JdbcDogDao implements Dao<DogDto> {
             }
             return entity;
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DatabaseCommunicationException("Can't create your dog =(", e);
         }
     }
@@ -74,6 +77,7 @@ public class JdbcDogDao implements Dao<DogDto> {
                 throw new ResourceNotFoundException("Seems like your dog is gone.");
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DatabaseCommunicationException("Can't create your dog =(", e);
         }
     }
@@ -100,6 +104,7 @@ public class JdbcDogDao implements Dao<DogDto> {
 
             return entity;
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DatabaseCommunicationException("Can't update your dog =(", e);
         }
     }
@@ -113,6 +118,7 @@ public class JdbcDogDao implements Dao<DogDto> {
                             + "WHERE ID = %s",
                     id));
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DatabaseCommunicationException("Can't delete your dog =(", e);
         }
     }

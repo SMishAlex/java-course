@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Test
-@ContextConfiguration(locations = "file:**/spring-mvc-config.xml")
+@ContextConfiguration(locations = "classpath:spring-mvc-config.xml")
 @WebAppConfiguration
 public class MockMvcDogControllerTest extends AbstractTestNGSpringContextTests {
 
