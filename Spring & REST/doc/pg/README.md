@@ -9,14 +9,9 @@ ssl = false				# (change requires restart)
 
 #service postgres restart
 ```
-<details>
-<summary>With prepared statement:</summary>
 
-<details>
-        <summary>Frame</summary>
-        <blockquote>
-     ~~~
-    Frame 10: 278 bytes on wire (2224 bits), 278 bytes captured (2224 bits) on interface 0
+### With prepared statement:   
+     Frame 10: 278 bytes on wire (2224 bits), 278 bytes captured (2224 bits) on interface 0
      Ethernet II, Src: 00:00:00_00:00:00 (00:00:00:00:00:00), Dst: 00:00:00_00:00:00 (00:00:00:00:00:00)
      Internet Protocol Version 4, Src: 127.0.0.1, Dst: 127.0.0.1
      Transmission Control Protocol, Src Port: 50966, Dst Port: 5432, Seq: 1, Ack: 1, Len: 212
@@ -44,12 +39,6 @@ ssl = false				# (change requires restart)
          [PDU Size: 7]
          [PDU Size: 10]
          [PDU Size: 5]
-     ~~~
-     </blockquote>
-    </details>
-    <details>
-    <blockquote>
-~~~
      PostgreSQL
          Type: Parse
          Length: 114
@@ -60,12 +49,6 @@ ssl = false				# (change requires restart)
              Type OID: 0
              Type OID: 20
              Type OID: 20
-~~~
-    </blockquote>
-    </details>
-    <details>
-    <blockquote>
-    ~~~
      PostgreSQL
          Type: Bind
          Length: 74
@@ -86,68 +69,31 @@ ssl = false				# (change requires restart)
              Column length: 8
              Data: 0000000000000001
          Result formats: 0
-    ~~~
-    </blockquote>
-    </details>
-    <details>
-    <blockquote>
-    ~~~
      PostgreSQL
          Type: Describe
          Length: 6
          Portal: 
-        ~~~
-    </blockquote>
-    </details>
-    <details>
-    <blockquote>
-    ~~~
      PostgreSQL
          Type: Execute
          Length: 9
          Portal: 
          Returns: all rows
-    ~~~
-    </blockquote>
-    </details>
-    <details>
-    <blockquote>
-    ~~~
      PostgreSQL
          Type: Sync
          Length: 4
-    ~~~
-    </blockquote>
-    </details>
-</details>
 
-<details>
-    <summary>With common statement:</summary>
-    <details>
-    <blockquote>
-    ~~~
+### With common statement:
+    
     Frame 9050: 220 bytes on wire (1760 bits), 220 bytes captured (1760 bits) on interface 0
     Ethernet II, Src: 00:00:00_00:00:00 (00:00:00:00:00:00), Dst: 00:00:00_00:00:00 (00:00:00:00:00:00)
     Internet Protocol Version 4, Src: 127.0.0.1, Dst: 127.0.0.1
     Transmission Control Protocol, Src Port: 50966, Dst Port: 5432, Seq: 425, Ack: 425, Len: 154
-    ~~~
-    </blockquote>
-    </details>
-    <details>
-    <blockquote>
-    ~~~
     PostgreSQL
         Type: Parse
         Length: 118
         Statement: 
         Query: INSERT INTO DOGS (NAME, DATEOFBIRTH, HEIGHT, WEIGHT) VALUES ( 'Dog1Name', '2020-02-29 +03', 1, 1 )\nRETURNING *
-        Parameters: 0
-    ~~~
-    </blockquote>
-    </details>
-    <details>
-    <blockquote>
-    ~~~
+        Parameters: 0 
     PostgreSQL
         Type: Bind
         Length: 12
@@ -156,39 +102,17 @@ ssl = false				# (change requires restart)
         Parameter formats: 0
         Parameter values: 0
         Result formats: 0
-    ~~~
-    </blockquote>
-    </details>
-    <details>
-    <blockquote>
-    ~~~
     PostgreSQL
         Type: Describe
         Length: 6
         Portal:  
-    ~~~
-    </blockquote>
-    </details>
-    <details>
-    <blockquote>
-    ~~~
     PostgreSQL
         Type: Execute
         Length: 9
         Portal: 
-        Returns: all rows
-    ~~~
-    </blockquote>
-    </details>
-    <details>
-    <blockquote>
-    ~~~
+        Returns: all rows  
     PostgreSQL
         Type: Sync
         Length: 4
-    ~~~
-    </blockquote>
-    </details>
-</details>
 
 
