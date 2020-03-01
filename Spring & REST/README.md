@@ -33,4 +33,4 @@
     Space in the middle
     Average value
     
-##[JDBC:](/doc/pg)
+## [JDBC:](./doc/pg)
