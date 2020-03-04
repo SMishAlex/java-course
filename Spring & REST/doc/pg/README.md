@@ -11,76 +11,105 @@ ssl = false				# (change requires restart)
 ```
 
 ### With prepared statement:   
-     Frame 10: 278 bytes on wire (2224 bits), 278 bytes captured (2224 bits) on interface 0
-     Ethernet II, Src: 00:00:00_00:00:00 (00:00:00:00:00:00), Dst: 00:00:00_00:00:00 (00:00:00:00:00:00)
-     Internet Protocol Version 4, Src: 127.0.0.1, Dst: 127.0.0.1
-     Transmission Control Protocol, Src Port: 50966, Dst Port: 5432, Seq: 1, Ack: 1, Len: 212
-         Source Port: 50966
-         Destination Port: 5432
-         [Stream index: 1]
-         [TCP Segment Len: 212]
-         Sequence number: 1    (relative sequence number)
-         [Next sequence number: 213    (relative sequence number)]
-         Acknowledgment number: 1    (relative ack number)
-         1000 .... = Header Length: 32 bytes (8)
-         Flags: 0x018 (PSH, ACK)
-         Window size value: 512
-         [Calculated window size: 512]
-         [Window size scaling factor: -1 (unknown)]
-         Checksum: 0xfefc [unverified]
-         [Checksum Status: Unverified]
-         Urgent pointer: 0
-         Options: (12 bytes), No-Operation (NOP), No-Operation (NOP), Timestamps
-         [SEQ/ACK analysis]
-         [Timestamps]
-         TCP payload (212 bytes)
-         [PDU Size: 115]
-         [PDU Size: 75]
-         [PDU Size: 7]
-         [PDU Size: 10]
-         [PDU Size: 5]
-     PostgreSQL
-         Type: Parse
-         Length: 114
-         Statement: 
-         Query: INSERT INTO DOGS (NAME, DATEOFBIRTH, HEIGHT, WEIGHT) VALUES ( $1, $2, $3, $4 )\nRETURNING *
-         Parameters: 4
-             Type OID: 1043
-             Type OID: 0
-             Type OID: 20
-             Type OID: 20
-     PostgreSQL
-         Type: Bind
-         Length: 74
-         Portal: 
-         Statement: 
-         Parameter formats: 4
-             Format: Text (0)
-             Format: Text (0)
-             Format: Binary (1)
-             Format: Binary (1)
-         Parameter values: 4
-             Column length: 8
-             Data: 446f67314e616d65
-             Column length: 14
-             Data: 323032302d30322d3239202b3033
-             Column length: 8
-             Data: 0000000000000001
-             Column length: 8
-             Data: 0000000000000001
-         Result formats: 0
-     PostgreSQL
-         Type: Describe
-         Length: 6
-         Portal: 
-     PostgreSQL
-         Type: Execute
-         Length: 9
-         Portal: 
-         Returns: all rows
-     PostgreSQL
-         Type: Sync
-         Length: 4
+    Frame 29764: 289 bytes on wire (2312 bits), 289 bytes captured (2312 bits) on interface 0
+    Linux cooked capture
+    Internet Protocol Version 4, Src: 127.0.0.1, Dst: 127.0.0.1
+    Transmission Control Protocol, Src Port: 40638, Dst Port: 5432, Seq: 307, Ack: 461, Len: 221
+    PostgreSQL
+        Type: Parse
+        Length: 117
+        Statement: S_1
+        Query: INSERT INTO DOGS (NAME, DATEOFBIRTH, HEIGHT, WEIGHT) VALUES ( $1, $2, $3, $4 )\nRETURNING *
+        Parameters: 4
+            Type OID: 1043
+            Type OID: 0
+            Type OID: 20
+            Type OID: 20
+    PostgreSQL
+        Type: Describe
+        Length: 9
+        Statement: S_1
+    PostgreSQL
+        Type: Bind
+        Length: 77
+        Portal: 
+        Statement: S_1
+        Parameter formats: 4
+            Format: Text (0)
+            Format: Text (0)
+            Format: Binary (1)
+            Format: Binary (1)
+        Parameter values: 4
+            Column length: 8
+            Data: 446f67314e616d65
+            Column length: 14
+            Data: 323032302d30332d3033202b3033
+            Column length: 8
+            Data: 0000000000000001
+            Column length: 8
+            Data: 0000000000000001
+        Result formats: 0
+    PostgreSQL
+        Type: Execute
+        Length: 9
+        Portal: 
+        Returns: all rows
+    PostgreSQL
+        Type: Sync
+        Length: 4
+        
+Second call:
+
+    Frame 30868: 171 bytes on wire (1368 bits), 171 bytes captured (1368 bits) on interface 0
+    Linux cooked capture
+    Internet Protocol Version 4, Src: 127.0.0.1, Dst: 127.0.0.1
+    Transmission Control Protocol, Src Port: 40638, Dst Port: 5432, Seq: 533, Ack: 702, Len: 103
+    PostgreSQL
+        Type: Bind
+        Length: 87
+        Portal: 
+        Statement: S_1
+        Parameter formats: 4
+            Format: Text (0)
+            Format: Text (0)
+            Format: Binary (1)
+            Format: Binary (1)
+        Parameter values: 4
+            Column length: 8
+            Data: 446f67314e616d65
+            Column length: 14
+            Data: 323032302d30332d3033202b3033
+            Column length: 8
+            Data: 0000000000000001
+            Column length: 8
+            Data: 0000000000000001
+        Result formats: 5
+            Format: Binary (1)
+            Format: Text (0)
+            Format: Binary (1)
+            Format: Binary (1)
+            Format: Binary (1)
+    PostgreSQL
+        Type: Execute
+        Length: 9
+        Portal: 
+        Returns: all rows
+    PostgreSQL
+        Type: Sync
+        Length: 4
+        
+Seems like magic is here:
+
+```java
+/**
+ {@link org.postgresql.jdbc.PgPreparedStatement.PgPreparedStatement(org.postgresql.jdbc.PgConnection, java.lang.String, int, int, int)}
+*/
+ PgPreparedStatement(PgConnection connection, String sql, int rsType, int rsConcurrency,
+      int rsHoldability) throws SQLException {
+    this(connection, connection.borrowQuery(sql), rsType, rsConcurrency, rsHoldability);
+  }
+```
+so if U close connection U lose your prepared statements as well.
 
 ### With common statement:
     

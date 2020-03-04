@@ -15,6 +15,24 @@ public class JdbcDogDao implements Dao<DogDto> {
         dataSource = ds;
     }
 
+    public void testPS() {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement =
+                         connection.prepareStatement("SELECT * FROM DOGS where ID = ?")) {
+
+                preparedStatement.setInt(1, 1);
+                preparedStatement.execute();
+            }
+            try (PreparedStatement preparedStatement =
+                         connection.prepareStatement("SELECT * FROM DOGS where ID = ?")) {
+                preparedStatement.setInt(1, 1);
+                preparedStatement.execute();
+            }
+        } catch (SQLException e) {
+            throw new DatabaseCommunicationException("Can't initiate database", e);
+        }
+    }
+
     public void initDB() {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement =

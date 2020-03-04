@@ -6,7 +6,7 @@
 
 
     <context:property-placeholder location="classpath:application.properties"/>
-    <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao"><!-- init-method="initDB"-->
+    <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao" init-method="testPS"><!-- init-method="initDB"-->
         <constructor-arg ref="pgDataSource"/>
     </bean>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
@@ -23,6 +23,7 @@
         <property name="databaseName" value="dog"/>
         <property name="user" value="${db.data-source.user}"/>
         <property name="password" value="${db.data-source.password}"/>
+        <property name="prepareThreshold" value="1"/>
     </bean>
     <mvc:annotation-driven validator="globalValidator">
         <mvc:message-converters>
