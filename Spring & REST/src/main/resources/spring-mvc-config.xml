@@ -6,11 +6,18 @@
 
 
     <context:property-placeholder location="classpath:application.properties"/>
-    <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao" init-method="testPS"><!-- init-method="initDB"-->
+    <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
         <constructor-arg ref="pgDataSource"/>
     </bean>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
         <constructor-arg ref="dogDao"/>
+    </bean>
+    <bean id="flywayConfig" class="org.flywaydb.core.api.configuration.ClassicConfiguration">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="locations" value="db/migration"/><!--default one but who knows if I'd like to change it-->
+    </bean>
+    <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+        <constructor-arg ref="flywayConfig"/>
     </bean>
     <bean id="globalValidator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
     <bean id="dataSource" class="org.h2.jdbcx.JdbcDataSource">

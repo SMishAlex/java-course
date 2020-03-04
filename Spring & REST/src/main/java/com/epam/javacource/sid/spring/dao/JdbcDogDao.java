@@ -15,39 +15,6 @@ public class JdbcDogDao implements Dao<DogDto> {
         dataSource = ds;
     }
 
-    public void testPS() {
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement =
-                         connection.prepareStatement("SELECT * FROM DOGS where ID = ?")) {
-
-                preparedStatement.setInt(1, 1);
-                preparedStatement.execute();
-            }
-            try (PreparedStatement preparedStatement =
-                         connection.prepareStatement("SELECT * FROM DOGS where ID = ?")) {
-                preparedStatement.setInt(1, 1);
-                preparedStatement.execute();
-            }
-        } catch (SQLException e) {
-            throw new DatabaseCommunicationException("Can't initiate database", e);
-        }
-    }
-
-    public void initDB() {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement =
-                     connection.prepareStatement("CREATE TABLE IF NOT EXISTS DOGS("
-                             + "ID SERIAL PRIMARY KEY,"
-                             + "name VARCHAR(100) NOT NULL CHECK (length(name) > 0),"
-                             + "dateOfBirth DATE,"
-                             + "height INTEGER NOT NULL CHECK (height > 0),"
-                             + "weight INTEGER NOT NULL CHECK (weight > 0))")) {
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new DatabaseCommunicationException("Can't initiate database", e);
-        }
-    }
-
     @Override
     public DogDto create(DogDto entity) {
         try (Connection connection = dataSource.getConnection();
