@@ -2,12 +2,12 @@ package com.epam.javacource.sid.spring.dao;
 
 import com.epam.javacource.sid.spring.exceptions.DatabaseCommunicationException;
 import com.epam.javacource.sid.spring.exceptions.ResourceNotFoundException;
-import com.epam.javacource.sid.spring.model.DogDto;
+import com.epam.javacource.sid.spring.model.Dog;
 
 import javax.sql.DataSource;
 import java.sql.*;
 
-public class JdbcDogDao implements Dao<DogDto> {
+public class JdbcDogDao implements Dao<Dog> {
 
     private final DataSource dataSource;
 
@@ -16,7 +16,7 @@ public class JdbcDogDao implements Dao<DogDto> {
     }
 
     @Override
-    public DogDto create(DogDto entity) {
+    public Dog create(Dog entity) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement =
                      connection.prepareStatement("INSERT INTO DOGS (NAME, DATEOFBIRTH, HEIGHT, WEIGHT) "
@@ -42,7 +42,7 @@ public class JdbcDogDao implements Dao<DogDto> {
     }
 
     @Override
-    public DogDto getOne(Integer id) {
+    public Dog getOne(Integer id) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement =
                      connection.prepareStatement(
@@ -52,7 +52,7 @@ public class JdbcDogDao implements Dao<DogDto> {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                return new DogDto(
+                return new Dog(
                         resultSet.getInt("ID"),
                         resultSet.getString("NAME"),
                         resultSet.getDate("DATEOFBIRTH").toLocalDate(),
@@ -63,13 +63,13 @@ public class JdbcDogDao implements Dao<DogDto> {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DatabaseCommunicationException("Can't create your dog =(", e);
+            throw new DatabaseCommunicationException("Can't find your dog =(", e);
         }
     }
 
 
     @Override
-    public DogDto update(DogDto entity) {
+    public Dog update(Dog entity) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("UPDATE DOGS\n"
                      + "SET\n"

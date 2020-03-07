@@ -143,5 +143,41 @@ so if U close connection U lose your prepared statements as well.
     PostgreSQL
         Type: Sync
         Length: 4
+        
+With JOOQ:
+    Frame 26334: 319 bytes on wire (2552 bits), 319 bytes captured (2552 bits) on interface 0
+    Linux cooked capture
+    Internet Protocol Version 4, Src: 127.0.0.1, Dst: 127.0.0.1
+    Transmission Control Protocol, Src Port: 60352, Dst Port: 5432, Seq: 307, Ack: 461, Len: 251
+    PostgreSQL
+        Type: Parse
+        Length: 202
+        Statement: S_1
+        Query: select "public"."dogs"."id", "public"."dogs"."name", "public"."dogs"."dateofbirth", "public"."dogs"."height", "public"."dogs"."weight" from "public"."dogs" where "public"."dogs"."id" = $1
+        Parameters: 1
+            Type OID: 23
+    PostgreSQL
+        Type: Bind
+        Length: 25
+        Portal: 
+        Statement: S_1
+        Parameter formats: 1
+            Format: Binary (1)
+        Parameter values: 1
+            Column length: 4
+            Data: 00000001
+        Result formats: 0
+    PostgreSQL
+        Type: Describe
+        Length: 6
+        Portal: 
+    PostgreSQL
+        Type: Execute
+        Length: 9
+        Portal: 
+        Returns: all rows
+    PostgreSQL
+        Type: Sync
+        Length: 4
 
 

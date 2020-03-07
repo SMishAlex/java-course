@@ -7,6 +7,7 @@
         <jackson-version>2.10.1</jackson-version>
         <spring.version>5.2.2.RELEASE</spring.version>
         <javax.el.version>3.0.0</javax.el.version>
+        <jooq.version>3.13.1</jooq.version>
     </properties>
     <packaging>war</packaging>
 
@@ -57,12 +58,12 @@
             <version>2.0.1.Final</version>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>6.0.18.Final</version>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
             <version>6.0.18.Final</version>
         </dependency>
@@ -101,6 +102,16 @@
             <artifactId>flyway-core</artifactId>
             <version>6.2.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.12</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -121,6 +132,47 @@
                     <source>8</source>
                     <target>8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <!-- Specify the maven code generator plugin -->
+                <!-- Use org.jooq            for the Open Source Edition
+                         org.jooq.pro        for commercial editions,
+                         org.jooq.pro-java-8 for commercial editions with Java 8 support,
+                         org.jooq.pro-java-6 for commercial editions with Java 6 support,
+                         org.jooq.trial      for the free trial edition
+
+                     Note: Only the Open Source Edition is hosted on Maven Central.
+                           Import the others manually from your distribution -->
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooq.version}</version>
+                <executions>
+                    <execution>
+                        <id>jooq-codegen</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <jdbc>
+                                <driver>org.postgresql.Driver</driver>
+                                <url>jdbc:postgresql://localhost:5432/dog</url>
+                                <user>dog</user>
+                                <password>dog</password>
+                            </jdbc>
+                            <generator>
+                                <database>
+                                    <!-- database specific options: What tables to schema/tables to include or exclude ? What type of database? etc-->
+                                    <includes>dogs</includes>
+                                </database>
+                                <target>
+                                    <packageName>com.epam.javacource.sid.generated.jooq</packageName>
+                                    <directory>src/main/java</directory>
+                                </target>
+                            </generator>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

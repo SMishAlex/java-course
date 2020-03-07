@@ -6,14 +6,18 @@
 
 
     <context:property-placeholder location="classpath:application.properties"/>
+    <bean id="jooqDogDao" class="com.epam.javacource.sid.spring.dao.JooqDogDao">
+        <constructor-arg ref="pgDataSource"/>
+        <constructor-arg value="POSTGRES" type="org.jooq.SQLDialect"/>
+    </bean>
     <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
         <constructor-arg ref="pgDataSource"/>
     </bean>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
-        <constructor-arg ref="dogDao"/>
+        <constructor-arg ref="jooqDogDao"/>
     </bean>
     <bean id="flywayConfig" class="org.flywaydb.core.api.configuration.ClassicConfiguration">
-        <property name="dataSource" ref="dataSource"/>
+        <property name="dataSource" ref="pgDataSource"/>
         <property name="locations" value="db/migration"/><!--default one but who knows if I'd like to change it-->
     </bean>
     <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">

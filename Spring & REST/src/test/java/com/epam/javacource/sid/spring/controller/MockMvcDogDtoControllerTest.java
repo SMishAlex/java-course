@@ -1,6 +1,6 @@
 package com.epam.javacource.sid.spring.controller;
 
-import com.epam.javacource.sid.spring.model.DogDto;
+import com.epam.javacource.sid.spring.model.Dog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.CharEncoding;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Test
 @ContextConfiguration(locations = "classpath:spring-mvc-config.xml")
 @WebAppConfiguration
-public class MockMvcDogControllerTest extends AbstractTestNGSpringContextTests {
+public class MockMvcDogDtoControllerTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private WebApplicationContext wac;
@@ -44,12 +44,12 @@ public class MockMvcDogControllerTest extends AbstractTestNGSpringContextTests {
         objectMapper.findAndRegisterModules();
     }
 
-    private DogDto getValidDog() {
-        return new DogDto(null, "Dog1Name", LocalDate.now().minusDays(1), 10L, 10L);
+    private Dog getValidDog() {
+        return new Dog(null, "Dog1Name", LocalDate.now().minusDays(1), 10L, 10L);
     }
 
-    private DogDto getUpdatedDog(DogDto currentDogState) {
-        return new DogDto(currentDogState.getId(), currentDogState.getName() + "Updated",
+    private Dog getUpdatedDog(Dog currentDogState) {
+        return new Dog(currentDogState.getId(), currentDogState.getName() + "Updated",
                 currentDogState.getDateOfBirth().minusDays(1),
                 currentDogState.getHeight() + 15L,
                 currentDogState.getWeight() + 15L);
@@ -69,9 +69,9 @@ public class MockMvcDogControllerTest extends AbstractTestNGSpringContextTests {
     public void whenGettingJustCreatedDogByIdTheBodyIsTheSame() throws Exception {
         String postResponse = createDog(getValidDog());
 
-        DogDto dog1 = objectMapper.readValue(postResponse, DogDto.class);
+        Dog dog = objectMapper.readValue(postResponse, Dog.class);
 
-        String getResponse = mockMvc.perform(MockMvcRequestBuilders.get("/dog/{dogId}", dog1.getId()))
+        String getResponse = mockMvc.perform(MockMvcRequestBuilders.get("/dog/{dogId}", dog.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -79,11 +79,11 @@ public class MockMvcDogControllerTest extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(postResponse, getResponse);
     }
 
-    private String createDog(DogDto dogDto) throws Exception {
+    private String createDog(Dog dog) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.post("/dog")
                 .characterEncoding(CharEncoding.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dogDto)))
+                .content(objectMapper.writeValueAsString(dog)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -93,27 +93,27 @@ public class MockMvcDogControllerTest extends AbstractTestNGSpringContextTests {
     public void whenUpdateDogAllFieldsInResponseAreUpdated() throws Exception {
         String postResponse = createDog(getValidDog());
 
-        DogDto dog1 = objectMapper.readValue(postResponse, DogDto.class);
+        Dog dog = objectMapper.readValue(postResponse, Dog.class);
 
-        DogDto updatedDog1 = getUpdatedDog(dog1);
+        Dog updatedDog = getUpdatedDog(dog);
 
-        String updatedDogResponseContent = mockMvc.perform(MockMvcRequestBuilders.put("/dog/{id}", dog1.getId())
+        String updatedDogResponseContent = mockMvc.perform(MockMvcRequestBuilders.put("/dog/{id}", dog.getId())
                 .characterEncoding(CharEncoding.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedDog1)))
+                .content(objectMapper.writeValueAsString(updatedDog)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        DogDto updatedDog1Response = objectMapper.readValue(updatedDogResponseContent, DogDto.class);
+        Dog updatedDogResponse = objectMapper.readValue(updatedDogResponseContent, Dog.class);
 
 
-        Assert.assertEquals(updatedDog1, updatedDog1Response);
+        Assert.assertEquals(updatedDog, updatedDogResponse);
     }
 
     @Test
     public void whenCreateInvalidDogExceptionProvided() throws Exception {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setHeight(-10L);
         mockMvc.perform(MockMvcRequestBuilders.post("/dog")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -1,6 +1,6 @@
 package com.epam.javacource.sid.spring.controller;
 
-import com.epam.javacource.sid.spring.model.DogDto;
+import com.epam.javacource.sid.spring.model.Dog;
 import io.restassured.http.ContentType;
 import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.Response;
@@ -13,16 +13,16 @@ import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
 
-public class DogControllerTest {
+public class DogDtoControllerTest {
 
     private final static String HOST = "http://localhost:8081";
 
-    private DogDto getDog1() {
-        return new DogDto(null, "Dog1Name", LocalDate.now().minusDays(1), 10L, 10L);
+    private Dog getDog1() {
+        return new Dog(null, "Dog1Name", LocalDate.now().minusDays(1), 10L, 10L);
     }
 
-    private DogDto getUpdatedDog(Integer dogId) {
-        return new DogDto(dogId, "Updated Dog1Name", LocalDate.now().minusDays(1), 15L, 15L);
+    private Dog getUpdatedDog(Integer dogId) {
+        return new Dog(dogId, "Updated Dog1Name", LocalDate.now().minusDays(1), 15L, 15L);
     }
 
 
@@ -41,17 +41,17 @@ public class DogControllerTest {
 
     @Test
     public void testGettingCreatedDogById() {
-        DogDto dog1 = given()
+        Dog dog = given()
                 .contentType(ContentType.JSON)
                 .body(getDog1(), ObjectMapperType.JACKSON_2)
                 .post(HOST + "/dog")
-                .as(DogDto.class, ObjectMapperType.JACKSON_2);
+                .as(Dog.class, ObjectMapperType.JACKSON_2);
 
-        DogDto getDog = given()
-                .get(HOST + "/dog/{id}", dog1.getId())
-                .as(DogDto.class);
+        Dog getDog = given()
+                .get(HOST + "/dog/{id}", dog.getId())
+                .as(Dog.class);
 
-        Assert.assertEquals(dog1, getDog);
+        Assert.assertEquals(dog, getDog);
     }
 
     @Test
@@ -61,29 +61,29 @@ public class DogControllerTest {
                 .body(getDog1(), ObjectMapperType.JACKSON_2)
                 .post(HOST + "/dog");
         System.out.println(postResponse.asString());
-        DogDto dog1 = postResponse
-                .as(DogDto.class, ObjectMapperType.JACKSON_2);
+        Dog dog = postResponse
+                .as(Dog.class, ObjectMapperType.JACKSON_2);
 
 
-        DogDto updatedDog1 = getUpdatedDog(dog1.getId());
-        DogDto updatedDog1Response = given()
+        Dog updatedDog = getUpdatedDog(dog.getId());
+        Dog updatedDogResponse = given()
                 .contentType(ContentType.JSON)
-                .body(updatedDog1, ObjectMapperType.JACKSON_2)
-                .put(HOST + "/dog/{id}", dog1.getId())
-                .as(DogDto.class);
+                .body(updatedDog, ObjectMapperType.JACKSON_2)
+                .put(HOST + "/dog/{id}", dog.getId())
+                .as(Dog.class);
 
-        Assert.assertEquals(updatedDog1, updatedDog1Response);
+        Assert.assertEquals(updatedDog, updatedDogResponse);
 
-        DogDto getDog = given()
-                .get(HOST + "/dog/{id}", dog1.getId())
-                .as(DogDto.class);
+        Dog getDog = given()
+                .get(HOST + "/dog/{id}", dog.getId())
+                .as(Dog.class);
 
-        Assert.assertEquals(getDog, updatedDog1Response);
+        Assert.assertEquals(getDog, updatedDogResponse);
     }
 
     @Test
     public void testNegativeCreatingDog() {
-        DogDto validDog = getDog1();
+        Dog validDog = getDog1();
         validDog.setHeight(-10L);
         final ValidatableResponse response = given()
                 .contentType(ContentType.JSON)

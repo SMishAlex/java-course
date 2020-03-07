@@ -2,7 +2,7 @@ package com.epam.javacource.sid.spring.controller;
 
 import com.epam.javacource.sid.spring.dao.Dao;
 import com.epam.javacource.sid.spring.exceptions.DatabaseCommunicationException;
-import com.epam.javacource.sid.spring.model.DogDto;
+import com.epam.javacource.sid.spring.model.Dog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -18,18 +18,27 @@ import java.time.LocalDate;
 public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
-    Dao<DogDto> dogDao;
+    Dao<Dog> dogDao;
+    @Autowired
+    Dao<Dog> jooqDogDao;
+
+    @Test
+    public void whenGet() {
+        for (int i = 0; i < 30; i++) {
+            System.out.println(jooqDogDao.getOne(1));
+        }
+    }
 
     @Test
     public void whenDogIsValidNoExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
 
         dogDao.create(validDog);
     }
 
     @Test
     public void whenDogIdIsZeroExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setId(0);
 
         dogDao.create(validDog);
@@ -37,7 +46,7 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
 
     @Test(expectedExceptions = {DatabaseCommunicationException.class})
     public void whenDogHeightIsZeroExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setHeight(0L);
 
         dogDao.create(validDog);
@@ -45,7 +54,7 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
 
     @Test(expectedExceptions = {DatabaseCommunicationException.class})
     public void whenDogHeightIsNegativeExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setHeight(-1L);
 
         dogDao.create(validDog);
@@ -54,7 +63,7 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
     @Test
     //@Test(expectedExceptions = {DatabaseCommunicationException.class})
     public void whenDogNameContainsSqlInjectionWeAreSad() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         String sqlInjectionName = "\"' blah";
         validDog.setName(sqlInjectionName);
 
@@ -63,7 +72,7 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
 
     @Test
     public void whenDogNameIsLongButNotTooLongWeAreFine() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         String veryLongName = Strings.repeat("A", 100);
         validDog.setName(veryLongName);
 
@@ -72,7 +81,7 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
 
     @Test(expectedExceptions = {DatabaseCommunicationException.class})
     public void whenDogNameIsTooLongExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         String veryLongName = Strings.repeat("A", 101);
         validDog.setName(veryLongName);
 
@@ -81,13 +90,13 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
 
     @Test(expectedExceptions = {DatabaseCommunicationException.class})
     public void whenDogNameIsEmptyExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setName("");
 
         dogDao.create(validDog);
     }
 
-    private DogDto getValidDog() {
-        return new DogDto(null, "Dog1Name", LocalDate.now().minusDays(1), 1L, 1L);
+    private Dog getValidDog() {
+        return new Dog(null, "Dog1Name", LocalDate.now().minusDays(1), 1L, 1L);
     }
 }

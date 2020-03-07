@@ -1,6 +1,6 @@
 package com.epam.javacource.sid.spring.controller;
 
-import com.epam.javacource.sid.spring.model.DogDto;
+import com.epam.javacource.sid.spring.model.Dog;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -13,7 +13,7 @@ import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.Set;
 
-public class DogDtoValidationTest {
+public class DogDto1ValidationTest {
 
     private Validator validator;
 
@@ -25,85 +25,85 @@ public class DogDtoValidationTest {
 
     @Test
     public void whenDogIsValidNoExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
 
-        Set<ConstraintViolation<DogDto>> constraintViolations = validator.validate(validDog);
+        Set<ConstraintViolation<Dog>> constraintViolations = validator.validate(validDog);
 
         Assert.assertTrue(constraintViolations.isEmpty());
     }
 
     @Test
     public void whenDogIdIsZeroExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setId(0);
 
-        Set<ConstraintViolation<DogDto>> constraintViolations = validator.validate(validDog);
+        Set<ConstraintViolation<Dog>> constraintViolations = validator.validate(validDog);
 
         Assert.assertFalse(constraintViolations.isEmpty());
     }
 
     @Test
     public void whenDogIdIsNegativeExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setId(-1);
 
-        Set<ConstraintViolation<DogDto>> constraintViolations = validator.validate(validDog);
+        Set<ConstraintViolation<Dog>> constraintViolations = validator.validate(validDog);
 
         Assert.assertFalse(constraintViolations.isEmpty());
     }
 
     @Test
     public void whenDogHeightIsZeroExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setHeight(0L);
 
-        Set<ConstraintViolation<DogDto>> constraintViolations = validator.validate(validDog);
+        Set<ConstraintViolation<Dog>> constraintViolations = validator.validate(validDog);
 
         Assert.assertFalse(constraintViolations.isEmpty());
     }
 
     @Test
     public void whenDogHeightIsNegativeExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setHeight(-1L);
 
-        Set<ConstraintViolation<DogDto>> constraintViolations = validator.validate(validDog);
+        Set<ConstraintViolation<Dog>> constraintViolations = validator.validate(validDog);
 
         Assert.assertFalse(constraintViolations.isEmpty());
     } 
     
     @Test
     public void whenDogNameIsTooLongExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         String veryLongName = Strings.repeat("A", 101);
         validDog.setName(veryLongName);
 
-        Set<ConstraintViolation<DogDto>> constraintViolations = validator.validate(validDog);
+        Set<ConstraintViolation<Dog>> constraintViolations = validator.validate(validDog);
 
         Assert.assertFalse(constraintViolations.isEmpty());
     }
 
     @Test
     public void whenDogNameIsEmptyExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setName("");
 
-        Set<ConstraintViolation<DogDto>> constraintViolations = validator.validate(validDog);
+        Set<ConstraintViolation<Dog>> constraintViolations = validator.validate(validDog);
 
         Assert.assertFalse(constraintViolations.isEmpty());
     }
 
     @Test
     public void whenDogDOBInFutureExceptionsProvided() {
-        DogDto validDog = getValidDog();
+        Dog validDog = getValidDog();
         validDog.setDateOfBirth(LocalDate.now().plusDays(1));
 
-        Set<ConstraintViolation<DogDto>> constraintViolations = validator.validate(validDog);
+        Set<ConstraintViolation<Dog>> constraintViolations = validator.validate(validDog);
 
         Assert.assertFalse(constraintViolations.isEmpty());
     }
 
-    private DogDto getValidDog() {
-        return new DogDto(null, "Dog1Name", LocalDate.now().minusDays(1), 1L, 1L);
+    private Dog getValidDog() {
+        return new Dog(null, "Dog1Name", LocalDate.now().minusDays(1), 1L, 1L);
     }
 }
