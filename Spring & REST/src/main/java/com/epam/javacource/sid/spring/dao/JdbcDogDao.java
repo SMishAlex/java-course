@@ -26,14 +26,25 @@ public class JdbcDogDao implements Dao<Dog> {
             preparedStatement.setDate(2, Date.valueOf(entity.getDateOfBirth()));
             preparedStatement.setLong(3, entity.getHeight());
             preparedStatement.setLong(4, entity.getWeight());
-            preparedStatement.executeUpdate();
+            try {
+                connection.setAutoCommit(false);
+                preparedStatement.executeUpdate();
 
-            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
-
-                if (generatedKeys.next()) {
-                    entity.setId(generatedKeys.getInt(1));
+                try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        entity.setId(generatedKeys.getInt(1));
+                    }
                 }
+
+                connection.commit();
+
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
             }
+
             return entity;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -49,17 +60,27 @@ public class JdbcDogDao implements Dao<Dog> {
                              "SELECT ID, NAME, DATEOFBIRTH, HEIGHT, WEIGHT FROM DOGS WHERE ID = ?")) {
 
             preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            try {
+                connection.setAutoCommit(false);
 
-            if (resultSet.next()) {
-                return new Dog(
-                        resultSet.getInt("ID"),
-                        resultSet.getString("NAME"),
-                        resultSet.getDate("DATEOFBIRTH").toLocalDate(),
-                        resultSet.getLong("HEIGHT"),
-                        resultSet.getLong("WEIGHT"));
-            } else {
-                throw new ResourceNotFoundException("Seems like your dog is gone.");
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                connection.commit();
+                if (resultSet.next()) {
+                    return new Dog(
+                            resultSet.getInt("ID"),
+                            resultSet.getString("NAME"),
+                            resultSet.getDate("DATEOFBIRTH").toLocalDate(),
+                            resultSet.getLong("HEIGHT"),
+                            resultSet.getLong("WEIGHT"));
+                } else {
+                    throw new ResourceNotFoundException("Seems like your dog is gone.");
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -85,7 +106,19 @@ public class JdbcDogDao implements Dao<Dog> {
             preparedStatement.setLong(4, entity.getWeight());
             preparedStatement.setInt(5, entity.getId());
 
-            preparedStatement.executeUpdate();
+            try {
+                connection.setAutoCommit(false);
+
+                preparedStatement.executeUpdate();
+
+                connection.commit();
+
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
+            }
 
             return entity;
         } catch (SQLException e) {
@@ -97,11 +130,24 @@ public class JdbcDogDao implements Dao<Dog> {
     @Override
     public void delete(Integer id) {
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(String.format(
-                    "DELETE FROM DOGS\n"
-                            + "WHERE ID = %s",
-                    id));
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM DOGS\n"
+                             + "WHERE ID = ?")) {
+            preparedStatement.setInt(1, id);
+            try {
+                connection.setAutoCommit(false);
+
+                preparedStatement.executeUpdate();
+
+                connection.commit();
+
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DatabaseCommunicationException("Can't delete your dog =(", e);
