@@ -1,5 +1,7 @@
 package com.epam.javacource.sid.spring.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -11,20 +13,25 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Value
-@Builder
+@JsonDeserialize(builder = DogDto.DogDtoBuilder.class)
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class DogDto {
     @Positive
-    private Integer id;
+    Integer id;
     @NotNull
     @Size(max = 100, min = 1)
-    private String name;
+    String name;
     @Past
-    private LocalDate dateOfBirth;
+    LocalDate dateOfBirth;
     @NotNull
     @Positive
-    private Long height;
+    Long height;
     @NotNull
     @Positive
-    private Long weight;
+    Long weight;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class DogDtoBuilder {
+    }
 }
