@@ -144,7 +144,8 @@ so if U close connection U lose your prepared statements as well.
         Type: Sync
         Length: 4
         
-With JOOQ:
+### With JOOQ:
+
     Frame 26334: 319 bytes on wire (2552 bits), 319 bytes captured (2552 bits) on interface 0
     Linux cooked capture
     Internet Protocol Version 4, Src: 127.0.0.1, Dst: 127.0.0.1
@@ -180,4 +181,47 @@ With JOOQ:
         Type: Sync
         Length: 4
 
+### Cache limit overloaded
+whenever Jdbc driver decides that used previously PS is no longer needed it can create new PS with closing deprecated one:
+
+Frame 64080: 192 bytes on wire (1536 bits), 192 bytes captured (1536 bits) on interface 0
+Linux cooked capture
+Internet Protocol Version 4, Src: 127.0.0.1, Dst: 127.0.0.1
+Transmission Control Protocol, Src Port: 58756, Dst Port: 5432, Seq: 2250177, Ack: 1491451, Len: 124
+    
+    PostgreSQL
+        Type: Close
+        Length: 9
+        Statement: S_1
+    PostgreSQL
+        Type: Parse
+        Length: 61
+        Statement: S_20029
+        Query: select id as id20028 from dogs where id=$1
+        Parameters: 1
+            Type OID: 23
+    PostgreSQL
+        Type: Bind
+        Length: 29
+        Portal: 
+        Statement: S_20029
+        Parameter formats: 1
+            Format: Binary (1)
+        Parameter values: 1
+            Column length: 4
+            Data: 00000001
+        Result formats: 0
+    PostgreSQL
+        Type: Describe
+        Length: 6
+        Portal: 
+    PostgreSQL
+        Type: Execute
+        Length: 9
+        Portal: 
+        Returns: all rows
+    PostgreSQL
+        Type: Sync
+        Length: 4
+  
 

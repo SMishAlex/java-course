@@ -35,6 +35,8 @@
         <property name="user" value="${db.data-source.user}"/>
         <property name="password" value="${db.data-source.password}"/>
         <property name="prepareThreshold" value="1"/>
+        <property name="preparedStatementCacheQueries" value="0x7fffffff"/>
+        <property name="preparedStatementCacheSizeMiB" value="0x7fffffff"/>
     </bean>
     <mvc:annotation-driven validator="globalValidator">
         <mvc:message-converters>
