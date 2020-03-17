@@ -13,8 +13,11 @@
     <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
         <constructor-arg ref="dataSource"/>
     </bean>
-    <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
+    <bean id="dogService" class="com.epam.javacource.sid.spring.service.DogService">
         <constructor-arg ref="dogDao"/>
+    </bean>
+    <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
+        <constructor-arg ref="dogService"/>
     </bean>
     <bean id="flywayConfig" class="org.flywaydb.core.api.configuration.ClassicConfiguration">
         <property name="dataSource" ref="pgDataSource"/>

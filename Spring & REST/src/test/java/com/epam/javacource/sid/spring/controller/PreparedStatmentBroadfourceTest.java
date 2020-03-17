@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import javax.sql.DataSource;
@@ -12,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.function.Function;
 
+@Ignore("this test is really long just unignore if U want to try overload db cache")
 @Test
 @ContextConfiguration(locations = "classpath:spring-mvc-config.xml")
 @WebAppConfiguration

@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Test
 @ContextConfiguration(locations = "classpath:spring-mvc-config.xml")
 @WebAppConfiguration
 public class MockMvcDogDtoControllerTest extends AbstractTestNGSpringContextTests {

@@ -23,13 +23,6 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
     Dao<Dog> jooqDogDao;
 
     @Test
-    public void whenGet() {
-        for (int i = 0; i < 30; i++) {
-            System.out.println(jooqDogDao.getOne(1));
-        }
-    }
-
-    @Test
     public void whenDogIsValidNoExceptionsProvided() {
         Dog validDog = getValidDog();
 

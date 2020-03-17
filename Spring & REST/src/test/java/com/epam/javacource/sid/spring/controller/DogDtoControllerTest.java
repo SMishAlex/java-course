@@ -5,8 +5,8 @@ import io.restassured.http.ContentType;
 import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import org.assertj.core.api.Assertions;
 import org.springframework.http.HttpStatus;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
@@ -51,7 +51,9 @@ public class DogDtoControllerTest {
                 .get(HOST + "/dog/{id}", dog.getId())
                 .as(Dog.class);
 
-        Assert.assertEquals(dog, getDog);
+        Assertions.assertThat(getDog)
+                .usingRecursiveComparison()
+                .isEqualTo(dog);
     }
 
     @Test
@@ -72,13 +74,17 @@ public class DogDtoControllerTest {
                 .put(HOST + "/dog/{id}", dog.getId())
                 .as(Dog.class);
 
-        Assert.assertEquals(updatedDog, updatedDogResponse);
+        Assertions.assertThat(updatedDogResponse)
+                .usingRecursiveComparison()
+                .isEqualTo(updatedDog);
 
         Dog getDog = given()
                 .get(HOST + "/dog/{id}", dog.getId())
                 .as(Dog.class);
 
-        Assert.assertEquals(getDog, updatedDogResponse);
+        Assertions.assertThat(getDog)
+                .usingRecursiveComparison()
+                .isEqualTo(updatedDogResponse);
     }
 
     @Test
