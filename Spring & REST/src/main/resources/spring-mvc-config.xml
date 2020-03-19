@@ -10,11 +10,15 @@
         <constructor-arg ref="pgDataSource"/>
         <constructor-arg value="POSTGRES" type="org.jooq.SQLDialect"/>
     </bean>
+    <bean id="connectionHolder" class="com.epam.javacource.sid.spring.dao.JdbcConnectionHolder">
+        <constructor-arg ref="pgDataSource"/>
+    </bean>
     <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
-        <constructor-arg ref="dataSource"/>
+        <constructor-arg ref="connectionHolder"/>
     </bean>
     <bean id="dogService" class="com.epam.javacource.sid.spring.service.DogService">
         <constructor-arg ref="dogDao"/>
+        <constructor-arg ref="connectionHolder"/>
     </bean>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
         <constructor-arg ref="dogService"/>
