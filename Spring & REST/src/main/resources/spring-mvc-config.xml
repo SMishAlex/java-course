@@ -23,8 +23,14 @@
         <constructor-arg ref="dogService"/>
         <constructor-arg ref="connectionHolder"/>
     </bean>
+    <bean id="dogServiceProxy" class="com.epam.javacource.sid.spring.service.proxy.TransactionalProxy"
+          factory-method="createProxy">
+        <constructor-arg index="0" ref="connectionHolder"/>
+        <constructor-arg index="1" ref="dogService"/>
+        <constructor-arg index="2" type="java.lang.Class" value="com.epam.javacource.sid.spring.service.DogService"/>
+    </bean>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
-        <constructor-arg ref="transactionalDogService"/>
+        <constructor-arg ref="dogServiceProxy"/>
     </bean>
     <bean id="flywayConfig" class="org.flywaydb.core.api.configuration.ClassicConfiguration">
         <property name="dataSource" ref="pgDataSource"/>
