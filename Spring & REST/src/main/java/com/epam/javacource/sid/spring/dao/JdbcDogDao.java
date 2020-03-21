@@ -16,10 +16,9 @@ public class JdbcDogDao implements Dao<Dog> {
 
     @Override
     public Dog create(Dog entity) {
-        try (Connection connection = connectionHolder.getConnection();
-             PreparedStatement preparedStatement =
-                     connection.prepareStatement("INSERT INTO DOGS (NAME, DATEOFBIRTH, HEIGHT, WEIGHT) "
-                             + "VALUES ( ?, ?, ?, ? )", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = connectionHolder.getConnection()
+                .prepareStatement("INSERT INTO DOGS (NAME, DATEOFBIRTH, HEIGHT, WEIGHT) "
+                        + "VALUES ( ?, ?, ?, ? )", Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, entity.getName());
             preparedStatement.setDate(2, Date.valueOf(entity.getDateOfBirth()));
@@ -42,10 +41,8 @@ public class JdbcDogDao implements Dao<Dog> {
 
     @Override
     public Dog getOne(Integer id) {
-        try (Connection connection = connectionHolder.getConnection();
-             PreparedStatement preparedStatement =
-                     connection.prepareStatement(
-                             "SELECT ID, NAME, DATEOFBIRTH, HEIGHT, WEIGHT FROM DOGS WHERE ID = ?")) {
+        try (PreparedStatement preparedStatement = connectionHolder.getConnection()
+                .prepareStatement("SELECT ID, NAME, DATEOFBIRTH, HEIGHT, WEIGHT FROM DOGS WHERE ID = ?")) {
 
             preparedStatement.setInt(1, id);
 
@@ -70,14 +67,14 @@ public class JdbcDogDao implements Dao<Dog> {
 
     @Override
     public Dog update(Dog entity) {
-        try (Connection connection = connectionHolder.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE DOGS\n"
-                     + "SET\n"
-                     + "    NAME = ?,\n"
-                     + "    DATEOFBIRTH = ?,\n"
-                     + "    HEIGHT = ?,\n"
-                     + "    WEIGHT = ?\n"
-                     + "WHERE ID = ?")) {
+        try (PreparedStatement preparedStatement = connectionHolder.getConnection()
+                .prepareStatement("UPDATE DOGS\n"
+                        + "SET\n"
+                        + "    NAME = ?,\n"
+                        + "    DATEOFBIRTH = ?,\n"
+                        + "    HEIGHT = ?,\n"
+                        + "    WEIGHT = ?\n"
+                        + "WHERE ID = ?")) {
 
             preparedStatement.setString(1, entity.getName());
             preparedStatement.setDate(2, Date.valueOf(entity.getDateOfBirth()));
@@ -96,10 +93,9 @@ public class JdbcDogDao implements Dao<Dog> {
 
     @Override
     public void delete(Integer id) {
-        try (Connection connection = connectionHolder.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "DELETE FROM DOGS\n"
-                             + "WHERE ID = ?")) {
+        try (PreparedStatement preparedStatement = connectionHolder.getConnection()
+                .prepareStatement("DELETE FROM DOGS\n"
+                        + "WHERE ID = ?")) {
             preparedStatement.setInt(1, id);
 
             preparedStatement.executeUpdate();

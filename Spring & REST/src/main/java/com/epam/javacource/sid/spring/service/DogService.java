@@ -28,6 +28,8 @@ public class DogService {
         } catch (Exception e) {
             jdbcConnectionHolder.rollbackTransaction();
             throw e;
+        } finally {
+            jdbcConnectionHolder.closeConnection();
         }
         return saved.toDto();
     }
@@ -41,6 +43,8 @@ public class DogService {
         } catch (Exception e) {
             jdbcConnectionHolder.rollbackTransaction();
             throw e;
+        } finally {
+            jdbcConnectionHolder.closeConnection();
         }
         return found.toDto();
     }
@@ -54,6 +58,8 @@ public class DogService {
         } catch (Exception e) {
             jdbcConnectionHolder.rollbackTransaction();
             throw e;
+        } finally {
+            jdbcConnectionHolder.closeConnection();
         }
         return updated.toDto();
     }
@@ -66,6 +72,8 @@ public class DogService {
         } catch (Exception e) {
             jdbcConnectionHolder.rollbackTransaction();
             throw e;
+        } finally {
+            jdbcConnectionHolder.closeConnection();
         }
     }
 }
