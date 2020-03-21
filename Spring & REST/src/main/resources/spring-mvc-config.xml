@@ -16,12 +16,15 @@
     <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
         <constructor-arg ref="connectionHolder"/>
     </bean>
-    <bean id="dogService" class="com.epam.javacource.sid.spring.service.DogService">
+    <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
         <constructor-arg ref="dogDao"/>
+    </bean>
+    <bean id="transactionalDogService" class="com.epam.javacource.sid.spring.service.proxy.TransactionalDogService">
+        <constructor-arg ref="dogService"/>
         <constructor-arg ref="connectionHolder"/>
     </bean>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
-        <constructor-arg ref="dogService"/>
+        <constructor-arg ref="transactionalDogService"/>
     </bean>
     <bean id="flywayConfig" class="org.flywaydb.core.api.configuration.ClassicConfiguration">
         <property name="dataSource" ref="pgDataSource"/>
