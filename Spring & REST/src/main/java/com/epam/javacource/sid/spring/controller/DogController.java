@@ -1,5 +1,6 @@
 package com.epam.javacource.sid.spring.controller;
 
+import com.epam.javacource.sid.spring.aop.annotations.LogMyCall;
 import com.epam.javacource.sid.spring.model.DogDto;
 import com.epam.javacource.sid.spring.service.DogService;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ public class DogController {
         this.dogService = dogService;
     }
 
+    @LogMyCall
     @GetMapping("/{id}")
     public DogDto getDog(@PathVariable("id") Integer id) {
         return dogService.getOne(id);
