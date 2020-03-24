@@ -5,9 +5,7 @@ import com.epam.javacource.sid.spring.dao.JdbcConnectionHolder;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class TransactionalProxy implements InvocationHandler {
 
@@ -17,14 +15,6 @@ public class TransactionalProxy implements InvocationHandler {
     public TransactionalProxy(JdbcConnectionHolder jdbcConnectionHolder, Object target) {
         this.jdbcConnectionHolder = jdbcConnectionHolder;
         this.target = target;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T createProxy(JdbcConnectionHolder jdbcConnectionHolder, Object target,
-                                    Class<? super T> targetInterface) {
-        return (T) Proxy.newProxyInstance(TransactionalProxy.class.getClassLoader(),
-                new Class[]{targetInterface},
-                new TransactionalProxy(jdbcConnectionHolder, target));
     }
 
     @Override

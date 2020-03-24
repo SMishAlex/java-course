@@ -7,11 +7,11 @@
 
     <context:property-placeholder location="classpath:application.properties"/>
     <bean id="jooqDogDao" class="com.epam.javacource.sid.spring.dao.JooqDogDao">
-        <constructor-arg ref="pgDataSource"/>
+        <constructor-arg ref="dataSource"/>
         <constructor-arg value="POSTGRES" type="org.jooq.SQLDialect"/>
     </bean>
     <bean id="connectionHolder" class="com.epam.javacource.sid.spring.dao.JdbcConnectionHolder">
-        <constructor-arg ref="pgDataSource"/>
+        <constructor-arg ref="dataSource"/>
     </bean>
     <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
         <constructor-arg ref="connectionHolder"/>
@@ -23,40 +23,67 @@
         <constructor-arg ref="dogService"/>
         <constructor-arg ref="connectionHolder"/>
     </bean>
-    <bean id="dogServiceProxy" class="com.epam.javacource.sid.spring.service.proxy.TransactionalProxy"
-          factory-method="createProxy">
-        <constructor-arg index="0" ref="connectionHolder"/>
-        <constructor-arg index="1" ref="dogService"/>
-        <constructor-arg index="2" type="java.lang.Class" value="com.epam.javacource.sid.spring.service.DogService"/>
-    </bean>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
         <constructor-arg ref="dogServiceProxy"/>
     </bean>
     <bean id="flywayConfig" class="org.flywaydb.core.api.configuration.ClassicConfiguration">
-        <property name="dataSource" ref="pgDataSource"/>
+        <property name="dataSource" ref="dataSource"/>
         <property name="locations" value="db/migration"/><!--default one but who knows if I'd like to change it-->
     </bean>
     <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
         <constructor-arg ref="flywayConfig"/>
     </bean>
     <bean id="globalValidator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
-    <bean id="dataSource" class="org.h2.jdbcx.JdbcDataSource">
-        <property name="url" value="jdbc:h2:~/dog"/>
-        <property name="user" value="${db.data-source.user}"/>
-        <property name="password" value="${db.data-source.password}"/>
-    </bean>
-    <bean id="pgDataSource" class="org.postgresql.ds.PGSimpleDataSource">
-        <property name="serverNames" value="localhost"/>
-        <property name="databaseName" value="dog"/>
-        <property name="user" value="${db.data-source.user}"/>
-        <property name="password" value="${db.data-source.password}"/>
-        <property name="prepareThreshold" value="1"/>
-        <property name="preparedStatementCacheQueries" value="0x7fffffff"/>
-        <property name="preparedStatementCacheSizeMiB" value="0x7fffffff"/>
-    </bean>
     <mvc:annotation-driven validator="globalValidator">
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
+    <!--Proxy profiles-->
+    <beans profile="!cglibProxy">
+        <bean id="dogServiceProxy" class="com.epam.javacource.sid.spring.service.proxy.ProxyFactory"
+              factory-method="createDynamicProxy">
+            <constructor-arg index="0" ref="connectionHolder"/>
+            <constructor-arg index="1" ref="dogService"/>
+            <constructor-arg index="2" type="java.lang.Class"
+                             value="com.epam.javacource.sid.spring.service.DogService"/>
+        </bean>
+    </beans>
+    <beans profile="cglibProxy">
+        <bean id="dogServiceProxy" class="com.epam.javacource.sid.spring.service.proxy.ProxyFactory"
+              factory-method="createCglibProxy">
+            <constructor-arg index="0" ref="connectionHolder"/>
+            <constructor-arg index="1" type="java.lang.Class"
+                             value="com.epam.javacource.sid.spring.service.impl.DogServiceImpl"/>
+            <constructor-arg index="2">
+                <array value-type="java.lang.Class">
+                    <value>com.epam.javacource.sid.spring.dao.Dao</value>
+                </array>
+            </constructor-arg>
+            <constructor-arg index="3">
+                <array>
+                    <ref bean="dogDao"/>
+                </array>
+            </constructor-arg>
+        </bean>
+    </beans>
+    <!--Db connection profiles-->
+    <beans profile="pgConnection">
+        <bean id="dataSource" class="org.postgresql.ds.PGSimpleDataSource">
+            <property name="serverNames" value="localhost"/>
+            <property name="databaseName" value="dog"/>
+            <property name="user" value="${db.data-source.user}"/>
+            <property name="password" value="${db.data-source.password}"/>
+            <property name="prepareThreshold" value="1"/>
+            <property name="preparedStatementCacheQueries" value="0x7fffffff"/>
+            <property name="preparedStatementCacheSizeMiB" value="0x7fffffff"/>
+        </bean>
+    </beans>
+    <beans profile="!pgConnection">
+        <bean id="dataSource" class="org.h2.jdbcx.JdbcDataSource">
+            <property name="url" value="jdbc:h2:~/dog"/>
+            <property name="user" value="${db.data-source.user}"/>
+            <property name="password" value="${db.data-source.password}"/>
+        </bean>
+    </beans>
 </beans>
