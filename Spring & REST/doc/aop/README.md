@@ -68,5 +68,10 @@ The CGLib proxy for classes that has interface could be turned on with:
     ...
 </aop:config>
 ```
+
+> dogService.getClass() -> class com.epam.javacource.sid.spring.service.impl.DogServiceImpl$$EnhancerBySpringCGLIB$$d3981a32
+
 By default for that classes JDK dynamic proxy will be used, which means that even public methods that doesn't overrides interface method will not be proxied.
 (e.g. [question](https://stackoverflow.com/questions/51795511/when-will-is-cglib-proxy-used-by-spring-aop?rq=1))
+
+> dogService.getClass() -> class com.sun.proxy.$Proxy27

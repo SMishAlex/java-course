@@ -45,7 +45,7 @@
         <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
             <constructor-arg ref="dogDao"/>
         </bean>
-        <aop:config proxy-target-class="true">
+        <aop:config>
             <aop:aspect id="transactionalAspect" ref="transactionalAdvice">
                 <aop:pointcut id="transactionalMethodsCalls"
                               expression="@annotation(com.epam.javacource.sid.spring.aop.annotations.IDontUseTryWithResourcesPleaseLetMeBeTransactional)"/>
