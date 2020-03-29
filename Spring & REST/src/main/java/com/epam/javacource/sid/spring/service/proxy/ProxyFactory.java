@@ -3,27 +3,30 @@ package com.epam.javacource.sid.spring.service.proxy;
 import com.epam.javacource.sid.spring.dao.JdbcConnectionHolder;
 import net.sf.cglib.proxy.Enhancer;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Proxy;
+import java.util.stream.Stream;
 
 public class ProxyFactory {
 
     @SuppressWarnings("unchecked")
-    public static <T> T createDynamicProxy(JdbcConnectionHolder jdbcConnectionHolder, Object target,
-                                           Class<? super T> targetInterface) {
+    public static <T> T createDynamicProxy(JdbcConnectionHolder jdbcConnectionHolder, T target) {
         return (T) Proxy.newProxyInstance(TransactionalProxy.class.getClassLoader(),
-                new Class[]{targetInterface},
+                target.getClass().getInterfaces(),
                 new TransactionalProxy(jdbcConnectionHolder, target));
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T createCglibProxy(JdbcConnectionHolder jdbcConnectionHolder,
-                                         Class<? super T> targetClass, Class<?>[] argumentTypes, Object[] arguments) {
+    public static <T> T createCglibProxy(JdbcConnectionHolder jdbcConnectionHolder, T target) {
         final Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(targetClass);
-        final CglibTransactionalProxyInterceptor cglibTransactionalProxyInterceptor
-                = new CglibTransactionalProxyInterceptor(jdbcConnectionHolder);
-        enhancer.setCallback(cglibTransactionalProxyInterceptor);
+        enhancer.setSuperclass(target.getClass());
+        enhancer.setCallback(new CglibTransactionalProxyInterceptor(jdbcConnectionHolder, target));
 
-        return (T) enhancer.create(argumentTypes, arguments);
+        Constructor<?> constructor = Stream.of(target.getClass().getConstructors())
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Could not create proxy: no available constructor"));
+        Class<?>[] parameterTypes = constructor.getParameterTypes();
+        Object[] fakeArgs = new Object[parameterTypes.length];
+        return (T) enhancer.create(parameterTypes, fakeArgs);
     }
 }

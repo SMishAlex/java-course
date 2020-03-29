@@ -1,5 +1,29 @@
 ## AOP
 
+### JDK Dynamic proxy
+
+U can create dynamic proxy for classes that implements interface (or multiple) with standard JDK proxy.
+
+The main thing here is InvocationHandler interface that allow U to wrap invocation of any method of proxied object.
+
+This is also Functional Interface so U can declare it as lambda.
+
+The signature of invocation handler method: 
+
+```java
+/**
+* See {@link java.lang.reflect.InvocationHandler}
+*/
+public Object invoke(Object proxy, Method method, Object[] args)
+       throws Throwable;
+```
+
+### CGLib
+
+
+
+### AspectJ
+
 Aspect-orientated programming - programming approach with extracting common non-business functional (e.g. logging, auditing, security) to the aspects.
 
 Terms:

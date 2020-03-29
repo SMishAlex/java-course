@@ -8,9 +8,11 @@ import net.sf.cglib.proxy.MethodProxy;
 public class CglibTransactionalProxyInterceptor implements MethodInterceptor {
 
     private final JdbcConnectionHolder jdbcConnectionHolder;
+    private final Object target;
 
-    public CglibTransactionalProxyInterceptor(JdbcConnectionHolder jdbcConnectionHolder) {
+    public CglibTransactionalProxyInterceptor(JdbcConnectionHolder jdbcConnectionHolder, Object target) {
         this.jdbcConnectionHolder = jdbcConnectionHolder;
+        this.target = target;
     }
 
     /**
@@ -21,7 +23,7 @@ public class CglibTransactionalProxyInterceptor implements MethodInterceptor {
         if (method.isAnnotationPresent(IDontUseTryWithResourcesPleaseLetMeBeTransactional.class)) {
             jdbcConnectionHolder.startTransaction();
             try {
-                final Object result = proxy.invokeSuper(obj, args);
+                final Object result = proxy.invoke(target, args);
                 jdbcConnectionHolder.commitTransaction();
                 return result;
             } catch (Exception e) {
@@ -31,7 +33,7 @@ public class CglibTransactionalProxyInterceptor implements MethodInterceptor {
                 jdbcConnectionHolder.closeConnection();
             }
         } else {
-            return proxy.invokeSuper(obj, args);
+            return proxy.invoke(target, args);
         }
     }
 }

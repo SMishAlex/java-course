@@ -45,26 +45,13 @@
               factory-method="createDynamicProxy">
             <constructor-arg index="0" ref="connectionHolder"/>
             <constructor-arg index="1" ref="dogService"/>
-            <constructor-arg index="2" type="java.lang.Class"
-                             value="com.epam.javacource.sid.spring.service.DogService"/>
         </bean>
     </beans>
     <beans profile="cglibProxy">
         <bean id="dogServiceProxy" class="com.epam.javacource.sid.spring.service.proxy.ProxyFactory"
               factory-method="createCglibProxy">
             <constructor-arg index="0" ref="connectionHolder"/>
-            <constructor-arg index="1" type="java.lang.Class"
-                             value="com.epam.javacource.sid.spring.service.impl.DogServiceImpl"/>
-            <constructor-arg index="2">
-                <array value-type="java.lang.Class">
-                    <value>com.epam.javacource.sid.spring.dao.Dao</value>
-                </array>
-            </constructor-arg>
-            <constructor-arg index="3">
-                <array>
-                    <ref bean="dogDao"/>
-                </array>
-            </constructor-arg>
+            <constructor-arg index="1" ref="dogService"/>
         </bean>
     </beans>
     <!--Db connection profiles-->
