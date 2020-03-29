@@ -59,3 +59,14 @@ Terms:
               aspectjweaver/${aspectj.version}/
               aspectjweaver-${aspectj.version}.jar
     ```
+  
+### Spring AOP:
+
+The CGLib proxy for classes that has interface could be turned on with:
+```xml
+<aop:config proxy-target-class="true">
+    ...
+</aop:config>
+```
+By default for that classes JDK dynamic proxy will be used, which means that even public methods that doesn't overrides interface method will not be proxied.
+(e.g. [question](https://stackoverflow.com/questions/51795511/when-will-is-cglib-proxy-used-by-spring-aop?rq=1))

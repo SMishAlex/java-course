@@ -1,8 +1,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/mvc
+    https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context
+    https://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 
     <context:property-placeholder location="classpath:application.properties"/>
@@ -16,15 +21,8 @@
     <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
         <constructor-arg ref="connectionHolder"/>
     </bean>
-    <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
-        <constructor-arg ref="dogDao"/>
-    </bean>
-    <bean id="transactionalDogService" class="com.epam.javacource.sid.spring.service.proxy.TransactionalDogService">
-        <constructor-arg ref="dogService"/>
-        <constructor-arg ref="connectionHolder"/>
-    </bean>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
-        <constructor-arg ref="dogServiceProxy"/>
+        <constructor-arg ref="dogService"/>
     </bean>
     <bean id="flywayConfig" class="org.flywaydb.core.api.configuration.ClassicConfiguration">
         <property name="dataSource" ref="dataSource"/>
@@ -39,12 +37,35 @@
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
+    <bean id="transactionalAdvice" class="com.epam.javacource.sid.spring.aop.aspect.SpringAspect">
+        <constructor-arg ref="connectionHolder"/>
+    </bean>
     <!--Proxy profiles-->
-    <beans profile="!cglibProxy">
-        <bean id="dogServiceProxy" class="com.epam.javacource.sid.spring.service.proxy.ProxyFactory"
+    <beans profile="!dynamicProxy,!cglibProxy">
+        <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
+            <constructor-arg ref="dogDao"/>
+        </bean>
+        <aop:config proxy-target-class="true">
+            <aop:aspect id="transactionalAspect" ref="transactionalAdvice">
+                <aop:pointcut id="transactionalMethodsCalls"
+                              expression="@annotation(com.epam.javacource.sid.spring.aop.annotations.IDontUseTryWithResourcesPleaseLetMeBeTransactional)"/>
+
+                <aop:before method="before" pointcut-ref="transactionalMethodsCalls"/>
+                <aop:after-returning method="afterReturning" pointcut-ref="transactionalMethodsCalls"/>
+                <aop:after-throwing method="afterThrowing" pointcut-ref="transactionalMethodsCalls"/>
+            </aop:aspect>
+        </aop:config>
+    </beans>
+    <beans profile="dynamicProxy">
+        <bean id="dogService" class="com.epam.javacource.sid.spring.service.proxy.ProxyFactory"
               factory-method="createDynamicProxy">
             <constructor-arg index="0" ref="connectionHolder"/>
-            <constructor-arg index="1" ref="dogService"/>
+            <constructor-arg index="1">
+                <bean class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
+                    <constructor-arg ref="dogDao"/>
+                </bean>
+            </constructor-arg>
+            <constructor-arg name="proxyType" value="com.epam.javacource.sid.spring.service.DogService"/>
         </bean>
     </beans>
     <beans profile="cglibProxy">

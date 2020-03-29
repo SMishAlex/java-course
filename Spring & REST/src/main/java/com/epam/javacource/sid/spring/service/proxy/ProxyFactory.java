@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 public class ProxyFactory {
 
     @SuppressWarnings("unchecked")
-    public static <T> T createDynamicProxy(JdbcConnectionHolder jdbcConnectionHolder, T target) {
+    public static <T, R extends T> T createDynamicProxy(JdbcConnectionHolder jdbcConnectionHolder, R target, Class<T> proxyType) {
         return (T) Proxy.newProxyInstance(TransactionalProxy.class.getClassLoader(),
-                target.getClass().getInterfaces(),
+                new Class[]{proxyType},
                 new TransactionalProxy(jdbcConnectionHolder, target));
     }
 
