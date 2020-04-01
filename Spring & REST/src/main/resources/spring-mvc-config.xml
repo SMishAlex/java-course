@@ -1,11 +1,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/mvc
     https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context
     https://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd
     http://www.springframework.org/schema/aop
     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
@@ -41,7 +43,27 @@
         <constructor-arg ref="connectionHolder"/>
     </bean>
     <!--Proxy profiles-->
-    <beans profile="!dynamicProxy,!cglibProxy">
+    <beans profile="default">
+        <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
+            <constructor-arg ref="dogDao"/>
+        </bean>
+        <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+            <property name="dataSource" ref="dataSource"/>
+        </bean>
+        <tx:advice id="txAdvice" transaction-manager="txManager">
+            <tx:attributes>
+                <tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+                <tx:method name="*"/>
+            </tx:attributes>
+        </tx:advice>
+        <aop:config>
+            <aop:pointcut id="transactionalMethodsCalls"
+                          expression="@annotation(com.epam.javacource.sid.spring.aop.annotations.IDontUseTryWithResourcesPleaseLetMeBeTransactional)"/>
+
+            <aop:advisor advice-ref="txAdvice" pointcut-ref="transactionalMethodsCalls"/>
+        </aop:config>
+    </beans>
+    <beans profile="aopTransaction">
         <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
             <constructor-arg ref="dogDao"/>
         </bean>
