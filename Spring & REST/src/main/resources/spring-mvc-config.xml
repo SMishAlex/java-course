@@ -47,21 +47,12 @@
         <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
             <constructor-arg ref="dogDao"/>
         </bean>
+        <!--Check that connection is really transactional:
+        DataSourceUtils.isConnectionTransactional(preparedStatement.getConnection(), dataSource)-->
         <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
             <property name="dataSource" ref="dataSource"/>
         </bean>
-        <tx:advice id="txAdvice" transaction-manager="txManager">
-            <tx:attributes>
-                <tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
-                <tx:method name="*"/>
-            </tx:attributes>
-        </tx:advice>
-        <aop:config>
-            <aop:pointcut id="transactionalMethodsCalls"
-                          expression="@annotation(com.epam.javacource.sid.spring.aop.annotations.IDontUseTryWithResourcesPleaseLetMeBeTransactional)"/>
-
-            <aop:advisor advice-ref="txAdvice" pointcut-ref="transactionalMethodsCalls"/>
-        </aop:config>
+        <tx:annotation-driven transaction-manager="txManager"/>
     </beans>
     <beans profile="aopTransaction">
         <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
