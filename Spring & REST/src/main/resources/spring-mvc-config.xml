@@ -21,7 +21,7 @@
         <constructor-arg ref="dataSource"/>
     </bean>
     <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
-        <constructor-arg ref="connectionHolder"/>
+        <constructor-arg ref="dataSource"/>
     </bean>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
         <constructor-arg ref="dogService"/>

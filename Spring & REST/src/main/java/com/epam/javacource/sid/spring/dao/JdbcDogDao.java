@@ -3,20 +3,22 @@ package com.epam.javacource.sid.spring.dao;
 import com.epam.javacource.sid.spring.exceptions.DatabaseCommunicationException;
 import com.epam.javacource.sid.spring.exceptions.ResourceNotFoundException;
 import com.epam.javacource.sid.spring.model.Dog;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 
+import javax.sql.DataSource;
 import java.sql.*;
 
 public class JdbcDogDao implements Dao<Dog> {
 
-    private JdbcConnectionHolder connectionHolder;
+    private final DataSource dataSource;
 
-    public JdbcDogDao(JdbcConnectionHolder jdbcConnectionHolder) {
-        connectionHolder = jdbcConnectionHolder;
+    public JdbcDogDao(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
     public Dog create(Dog entity) {
-        try (PreparedStatement preparedStatement = connectionHolder.getConnection()
+        try (PreparedStatement preparedStatement = DataSourceUtils.getConnection(dataSource)
                 .prepareStatement("INSERT INTO DOGS (NAME, DATEOFBIRTH, HEIGHT, WEIGHT) "
                         + "VALUES ( ?, ?, ?, ? )", Statement.RETURN_GENERATED_KEYS)) {
 
@@ -41,7 +43,7 @@ public class JdbcDogDao implements Dao<Dog> {
 
     @Override
     public Dog getOne(Integer id) {
-        try (PreparedStatement preparedStatement = connectionHolder.getConnection()
+        try (PreparedStatement preparedStatement = DataSourceUtils.getConnection(dataSource)
                 .prepareStatement("SELECT ID, NAME, DATEOFBIRTH, HEIGHT, WEIGHT FROM DOGS WHERE ID = ?")) {
 
             preparedStatement.setInt(1, id);
@@ -67,7 +69,7 @@ public class JdbcDogDao implements Dao<Dog> {
 
     @Override
     public Dog update(Dog entity) {
-        try (PreparedStatement preparedStatement = connectionHolder.getConnection()
+        try (PreparedStatement preparedStatement = DataSourceUtils.getConnection(dataSource)
                 .prepareStatement("UPDATE DOGS\n"
                         + "SET\n"
                         + "    NAME = ?,\n"
@@ -93,7 +95,7 @@ public class JdbcDogDao implements Dao<Dog> {
 
     @Override
     public void delete(Integer id) {
-        try (PreparedStatement preparedStatement = connectionHolder.getConnection()
+        try (PreparedStatement preparedStatement = DataSourceUtils.getConnection(dataSource)
                 .prepareStatement("DELETE FROM DOGS\n"
                         + "WHERE ID = ?")) {
             preparedStatement.setInt(1, id);
