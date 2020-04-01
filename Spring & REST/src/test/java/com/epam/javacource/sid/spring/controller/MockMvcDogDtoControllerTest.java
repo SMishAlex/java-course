@@ -4,6 +4,7 @@ import com.epam.javacource.sid.spring.model.Dog;
 import com.epam.javacource.sid.spring.model.DogDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.CharEncoding;
+import org.hamcrest.CoreMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,8 +20,9 @@ import org.testng.annotations.Test;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.not;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ContextConfiguration(locations = "classpath:spring-mvc-config.xml")
 @WebAppConfiguration
@@ -62,7 +64,8 @@ public class MockMvcDogDtoControllerTest extends AbstractTestNGSpringContextTest
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(getValidDog())))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", CoreMatchers.is(CoreMatchers.notNullValue())));
     }
 
     @Test

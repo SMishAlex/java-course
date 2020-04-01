@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS DOGS
+CREATE TABLE DOGS
 (
     ID          SERIAL PRIMARY KEY,
     name        VARCHAR(100) NOT NULL CHECK (length(name) > 0),
