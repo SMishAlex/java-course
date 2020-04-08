@@ -1,0 +1,34 @@
+@startuml
+start
+partition dataSource.getConnection() {
+  : C3P0PooledConnectionPool.checkoutAndMarkConnectionInUse;
+  : BasicResourcePool.prelimCheckoutResource;
+  if (available == 0) then (true)
+    : awaitAvailable(timeout);
+  endif
+  : unused.get(0);
+  : pc.addConnectionEventListener(cl);
+  note right: subscribe on events
+  :PooledConnection]
+  partition PooledConnection.getConnection() {
+    if (exposedProxy == null) then (true)
+      : new NewProxyConnection(physicalConnection, this);
+      else (false)
+      : exposedProxy;
+      endif
+  }
+}
+: ...;
+
+partition connection.close() {
+  : NewPooledConnection.markClosedProxyConnection;
+  : NewPooledConnection.exposedProxy = null;
+  : some transactional management %);
+  : ConnectionEventSupport.fireConnectionClosed();
+  note right: close events notification for all subscribers
+  : C3P0PooledConnectionPool.checkinPooledConnection;
+  note right: unsubscribe and unmarkConnectionInUseAndCheckin
+
+}
+end
+@enduml

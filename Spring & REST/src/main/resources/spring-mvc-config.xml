@@ -13,15 +13,7 @@
 
 
     <context:property-placeholder location="classpath:application.properties"/>
-    <bean id="jooqDogDao" class="com.epam.javacource.sid.spring.dao.JooqDogDao">
-        <constructor-arg ref="dataSource"/>
-        <constructor-arg value="POSTGRES" type="org.jooq.SQLDialect"/>
-    </bean>
-    <bean id="connectionHolder" class="com.epam.javacource.sid.spring.dao.JdbcConnectionHolder">
-        <constructor-arg ref="dataSource"/>
-    </bean>
     <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
-        <constructor-arg ref="dataSource"/>
         <constructor-arg>
             <bean class="org.springframework.jdbc.core.JdbcTemplate">
                 <constructor-arg ref="dataSource"/>
@@ -44,9 +36,6 @@
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
-    <bean id="transactionalAdvice" class="com.epam.javacource.sid.spring.aop.aspect.SpringAspect">
-        <constructor-arg ref="connectionHolder"/>
-    </bean>
     <!--Proxy profiles-->
     <beans profile="default">
         <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
@@ -60,8 +49,14 @@
         <tx:annotation-driven transaction-manager="txManager"/>
     </beans>
     <beans profile="aopTransaction">
+        <bean id="connectionHolder" class="com.epam.javacource.sid.spring.dao.JdbcConnectionHolder">
+            <constructor-arg ref="dataSource"/>
+        </bean>
         <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
             <constructor-arg ref="dogDao"/>
+        </bean>
+        <bean id="transactionalAdvice" class="com.epam.javacource.sid.spring.aop.aspect.SpringAspect">
+            <constructor-arg ref="connectionHolder"/>
         </bean>
         <aop:config>
             <aop:aspect id="transactionalAspect" ref="transactionalAdvice">
@@ -75,6 +70,9 @@
         </aop:config>
     </beans>
     <beans profile="dynamicProxy">
+        <bean id="connectionHolder" class="com.epam.javacource.sid.spring.dao.JdbcConnectionHolder">
+            <constructor-arg ref="dataSource"/>
+        </bean>
         <bean id="dogService" class="com.epam.javacource.sid.spring.service.proxy.ProxyFactory"
               factory-method="createDynamicProxy">
             <constructor-arg index="0" ref="connectionHolder"/>
@@ -94,6 +92,14 @@
         </bean>
     </beans>
     <!--Db connection profiles-->
+    <beans profile="default">
+        <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+            <property name="driverClass" value="${db.data-source}"/>
+            <property name="jdbcUrl" value="${db.data-source.url}"/>
+            <property name="user" value="${db.data-source.user}"/>
+            <property name="password" value="${db.data-source.password}"/>
+        </bean>
+    </beans>
     <beans profile="pgConnection">
         <bean id="dataSource" class="org.postgresql.ds.PGSimpleDataSource">
             <property name="serverNames" value="localhost"/>
@@ -105,7 +111,7 @@
             <property name="preparedStatementCacheSizeMiB" value="0x7fffffff"/>
         </bean>
     </beans>
-    <beans profile="!pgConnection">
+    <beans profile="h2Connection">
         <bean id="dataSource" class="org.h2.jdbcx.JdbcDataSource">
             <property name="url" value="jdbc:h2:~/dog"/>
             <property name="user" value="${db.data-source.user}"/>

@@ -14,11 +14,9 @@ import java.sql.Statement;
 
 public class JdbcDogDao implements Dao<Dog> {
 
-    private final DataSource dataSource;
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcDogDao(DataSource dataSource, JdbcTemplate jdbcTemplate) {
-        this.dataSource = dataSource;
+    public JdbcDogDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
