@@ -104,6 +104,13 @@
             <property name="maxStatements" value="60"/><!--maxPoolSize * maxStatementsPerConnection-->
             <!--a bit more than the number of PreparedStatements  application frequently uses-->
             <property name="maxStatementsPerConnection" value="6"/>
+            <!--https://www.mchange.com/projects/c3p0/#configuring_connection_testing-->
+            <!--com.mchange.v2.c3p0.impl.C3P0Defaults.*-->
+            <property name="testConnectionOnCheckout" value="true"/><!--default: false-->
+            <property name="testConnectionOnCheckin" value="true"/><!--default: false-->
+            <!--idleConnectionTestPeriod in seconds!-->
+            <property name="idleConnectionTestPeriod" value="600"/><!--default: 0  //idle connections never tested-->
+
         </bean>
     </beans>
     <beans profile="pgConnection">
