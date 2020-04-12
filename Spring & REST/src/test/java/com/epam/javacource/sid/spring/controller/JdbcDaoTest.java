@@ -19,8 +19,6 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
     Dao<Dog> dogDao;
-    @Autowired
-    Dao<Dog> jooqDogDao;
 
     @Test
     public void whenDogIsValidNoExceptionsProvided() {
