@@ -99,7 +99,8 @@
             <property name="user" value="${db.data-source.user}"/>
             <property name="password" value="${db.data-source.password}"/>
             <!--https://www.mchange.com/projects/c3p0/#configuring_statement_pooling-->
-            <property name="maxPoolSize" value="10"/><!--Probably should be equal to thread pool size if each thread ask connections frequently-->
+            <property name="maxPoolSize"
+                      value="10"/><!--Probably should be equal to thread pool size if each thread ask connections frequently-->
             <property name="minPoolSize" value="1"/>
             <property name="maxStatements" value="60"/><!--maxPoolSize * maxStatementsPerConnection-->
             <!--a bit more than the number of PreparedStatements  application frequently uses-->
@@ -110,6 +111,13 @@
             <property name="testConnectionOnCheckin" value="true"/><!--default: false-->
             <!--idleConnectionTestPeriod in seconds!-->
             <property name="idleConnectionTestPeriod" value="600"/><!--default: 0  //idle connections never tested-->
+            <!--checkoutTimeout in milliseconds WTF?!-->
+            <property name="checkoutTimeout" value="600"/><!--default: 0  //waits indefinitely-->
+            <!--unreturnedConnectionTimeout in seconds again!-->
+            <property name="unreturnedConnectionTimeout"
+                      value="600"/><!--default: 0  //no limit to forgotten connections-->
+            <!--debugUnreturnedConnectionStackTraces = true
+            will sout where connection destroyed by unreturnedConnectionTimeout was checked out-->
 
         </bean>
     </beans>
