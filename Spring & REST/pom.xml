@@ -1,7 +1,7 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.epam.java-cource.sid.spring</groupId>
-    <artifactId>rest-app</artifactId>
+    <artifactId>rest-application</artifactId>
     <version>1.0</version>
     <properties>
         <jackson-version>2.10.1</jackson-version>
@@ -105,6 +105,12 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-el-api</artifactId>
+            <version>9.0.31</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jdbc</artifactId>
             <version>9.0.31</version>
             <scope>provided</scope>
         </dependency>

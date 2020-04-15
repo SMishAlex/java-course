@@ -2,6 +2,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jee="http://www.springframework.org/schema/jee"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/mvc
     https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context
@@ -9,7 +10,7 @@
     http://www.springframework.org/schema/tx
     http://www.springframework.org/schema/tx/spring-tx.xsd
     http://www.springframework.org/schema/aop
-    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
 
     <context:property-placeholder location="classpath:application.properties"/>
@@ -93,6 +94,11 @@
     </beans>
     <!--Db connection profiles-->
     <beans profile="default">
+        <jee:jndi-lookup id="dataSource"
+                         jndi-name="jdbc/LocalDatabaseName"
+                         expected-type="javax.sql.DataSource"/>
+    </beans>
+    <beans profile="c3p0">
         <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
             <property name="driverClass" value="${db.data-source}"/>
             <property name="jdbcUrl" value="${db.data-source.url}"/>

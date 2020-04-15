@@ -7,10 +7,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 
-import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.Optional;
 
 public class JdbcDogDao implements Dao<Dog> {
 
@@ -37,7 +37,12 @@ public class JdbcDogDao implements Dao<Dog> {
                 return preparedStatement;
             }, keyHolder);
 
-            entity.setId((int) keyHolder.getKey());
+            final Object id = Optional.of(keyHolder)
+                    .map(GeneratedKeyHolder::getKeys)
+                    .map(generatedKeys -> generatedKeys.get("id"))
+                    .orElseThrow(() -> new DatabaseCommunicationException("Can't create your dog =(", null));
+
+            entity.setId((int) id);
             return entity;
         } catch (DataAccessException e) {
             e.printStackTrace();
