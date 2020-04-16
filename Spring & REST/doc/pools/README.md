@@ -7,4 +7,30 @@
  Probably it's better to use it only for private network communications.  
  
  ---
- [1](https://kb.zyxel.com/KB/searchArticle!gwsViewDetail.action?articleOid=012926&lang=EN)
+ [[1]](https://kb.zyxel.com/KB/searchArticle!gwsViewDetail.action?articleOid=012926&lang=EN)
+ 
+ ===
+ [Tomcat database pool](https://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html)
+ [c3p0](https://www.mchange.com/projects/c3p0/)
+ 
+ Pools configuration comparing:
+ 
+ |c3p0 property| tomcat DB pool property|
+ |:-----------:|:----------------------:|
+ |driverClass                |driverClassName|
+ |jdbcUrl                    |url|
+ |user                       |user|
+ |password                   |password|
+ |maxPoolSize                |maxActive (maxIdle?)|
+ |minPoolSize                |initialSize (minIdle?)|
+ |maxStatements              |poolPreparedStatements + maxOpenPreparedStatements<sup>*</sup>|
+ |maxStatementsPerConnection ||
+ |testConnectionOnCheckout   |testOnBorrow (will retry), testOnConnect (will throw an SQLException)|
+ |testConnectionOnCheckin    |testOnReturn|
+ |idleConnectionTestPeriod   |testWhileIdle + timeBetweenEvictionRunsMillis|
+ |checkoutTimeout            |maxWait|
+ |unreturnedConnectionTimeout|removeAbandoned + removeAbandonedTimeout|
+ |debugUnreturnedConnectionStackTraces|logAbandoned|
+ 
+<sup>*</sup> - These properties not used according to documentation however there is org.apache.tomcat.jdbc.pool.interceptor.StatementCache with attribute `max`.
+ 
