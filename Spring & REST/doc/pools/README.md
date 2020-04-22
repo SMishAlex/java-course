@@ -10,7 +10,7 @@
  [[1]](https://kb.zyxel.com/KB/searchArticle!gwsViewDetail.action?articleOid=012926&lang=EN)
  
  ===
- [Tomcat database pool](https://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html)
+ [Tomcat database pool](https://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html) <p></p>
  [c3p0](https://www.mchange.com/projects/c3p0/)
  
  Pools configuration comparing:

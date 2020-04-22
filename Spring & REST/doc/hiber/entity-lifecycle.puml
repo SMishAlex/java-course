@@ -1,0 +1,19 @@
+@startuml
+title JPA (Hibernate in Notes)
+[*] -down-> New : new()
+note right: TRANSIENT
+New --> Managed :persist
+note right: PERSISTENT
+New --> [*] :GC?
+Deleted --> [*] :GC?
+Detached -->  [*] : GC?
+Managed -->  Detached : detach/clear/close
+note right: DETACHED
+Detached -->  Managed : merge
+Managed -->  Deleted : removed
+note right: REMOVED
+Managed -->  DB :commit/flush
+Deleted -->  DB :commit/flush
+Deleted -->  Managed :persist
+DB -->  Managed :find
+@enduml
