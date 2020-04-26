@@ -6,13 +6,14 @@ import com.epam.javacource.sid.spring.model.Dog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.testng.annotations.Test;
 import org.testng.util.Strings;
 
 import java.time.LocalDate;
 
 @ContextConfiguration(locations = {"classpath*:spring-mvc-config.xml"})
-public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
+public class HibernateDaoTest extends AbstractTransactionalTestNGSpringContextTests {
 
     @Autowired
     Dao<Dog> dogDao;
@@ -24,7 +25,7 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
         dogDao.create(validDog);
     }
 
-    @Test
+    @Test(expectedExceptions = {DatabaseCommunicationException.class})
     public void whenDogIdIsZeroExceptionsProvided() {
         Dog validDog = getValidDog();
         validDog.setId(0);

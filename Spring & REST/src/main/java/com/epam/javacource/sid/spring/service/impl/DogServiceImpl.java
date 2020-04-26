@@ -1,6 +1,5 @@
 package com.epam.javacource.sid.spring.service.impl;
 
-import com.epam.javacource.sid.spring.aop.annotations.IDontUseTryWithResourcesPleaseLetMeBeTransactional;
 import com.epam.javacource.sid.spring.dao.Dao;
 import com.epam.javacource.sid.spring.model.Dog;
 import com.epam.javacource.sid.spring.model.DogDto;

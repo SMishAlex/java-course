@@ -10,6 +10,7 @@
         <jooq.version>3.13.1</jooq.version>
         <lombok.version>1.18.12</lombok.version>
         <aspectj.version>1.9.5</aspectj.version>
+        <hibernate.version>5.3.7.Final</hibernate.version>
     </properties>
     <packaging>war</packaging>
 
@@ -173,8 +174,13 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.4.14.Final</version>
-            <scope>test</scope>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

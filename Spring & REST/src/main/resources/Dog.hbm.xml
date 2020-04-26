@@ -3,9 +3,9 @@
         <id name="id" type="int" column="id">
             <generator class="native"/>
         </id>
-        <property name="name" type="string" column="name"/>
-        <property name="dateOfBirth" type="string" column="date_of_birth"/>
-        <property name="height" type="long" column="height"/>
-        <property name="weight" type="long" column="weight"/>
+        <property name="name" column="name"/>
+        <property name="dateOfBirth" column="date_of_birth"/>
+        <property name="height" column="height"/>
+        <property name="weight" column="weight"/>
     </class>
 </hibernate-mapping>
