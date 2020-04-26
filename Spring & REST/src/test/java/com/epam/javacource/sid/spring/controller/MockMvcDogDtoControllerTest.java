@@ -4,7 +4,6 @@ import com.epam.javacource.sid.spring.model.Dog;
 import com.epam.javacource.sid.spring.model.DogDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.CharEncoding;
-import org.apache.tomcat.jdbc.pool.DataSourceFactory;
 import org.hamcrest.CoreMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,15 +15,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.time.LocalDate;
-import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -41,43 +34,6 @@ public class MockMvcDogDtoControllerTest extends AbstractTestNGSpringContextTest
     private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
-
-    @BeforeTest
-    public static void setUpDataSource() throws Exception {
-        try {
-            System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
-            System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
-
-            final DataSourceFactory dataSourceFactory = new DataSourceFactory();
-            final Properties properties = new Properties();
-            properties.put("name", "jdbc/DatabaseName");
-            properties.put("auth", "Container");
-            properties.put("type", "javax.sql.DataSource");
-            properties.put("username", "dog");
-            properties.put("password", "dog");
-            properties.put("url", "jdbc:postgresql://localhost:5432/dog");
-            properties.put("driverClassName", "org.postgresql.Driver");
-            properties.put("initialSize", "20");
-            properties.put("maxWaitMillis", "15000");
-            properties.put("maxTotal", "75");
-            properties.put("maxIdle", "20");
-            properties.put("maxAge", "7200000");
-            properties.put("testOnBorrow", "true");
-            properties.put("validationQuery", "select 1");
-            final DataSource dataSource = dataSourceFactory.createDataSource(properties);
-
-            InitialContext ic = new InitialContext();
-
-            ic.createSubcontext("java:comp");
-            ic.createSubcontext("java:comp/env");
-            ic.createSubcontext("java:comp/env/jdbc");
-            ic.createSubcontext("java:comp/env/jdbc/LocalDatabaseName");
-
-            ic.rebind("java:comp/env/jdbc/LocalDatabaseName", dataSource);
-        } catch (NamingException ex) {
-            ex.printStackTrace();
-        }
-    }
 
     @BeforeMethod
     public void prepareMockMvc() {

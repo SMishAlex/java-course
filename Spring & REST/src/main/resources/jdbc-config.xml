@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans profile="default"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop">
+
+    <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
+        <constructor-arg>
+            <bean class="org.springframework.jdbc.core.JdbcTemplate">
+                <constructor-arg ref="dataSource"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+    <beans profile="default">
+        <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+            <property name="dataSource" ref="dataSource"/>
+        </bean>
+        <tx:annotation-driven transaction-manager="txManager"/>
+    </beans>
+    <beans profile="aopTransaction">
+        <bean id="connectionHolder" class="com.epam.javacource.sid.spring.dao.JdbcConnectionHolder">
+            <constructor-arg ref="dataSource"/>
+        </bean>
+        <bean id="transactionalAdvice" class="com.epam.javacource.sid.spring.aop.aspect.SpringAspect">
+            <constructor-arg ref="connectionHolder"/>
+        </bean>
+        <aop:config>
+            <aop:aspect id="transactionalAspect" ref="transactionalAdvice">
+                <aop:pointcut id="transactionalMethodsCalls"
+                              expression="@annotation(com.epam.javacource.sid.spring.aop.annotations.IDontUseTryWithResourcesPleaseLetMeBeTransactional)"/>
+
+                <aop:before method="before" pointcut-ref="transactionalMethodsCalls"/>
+                <aop:after-returning method="afterReturning" pointcut-ref="transactionalMethodsCalls"/>
+                <aop:after-throwing method="afterThrowing" pointcut-ref="transactionalMethodsCalls"/>
+            </aop:aspect>
+        </aop:config>
+    </beans>
+</beans>

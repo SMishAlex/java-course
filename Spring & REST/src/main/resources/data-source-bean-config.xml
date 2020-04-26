@@ -1,0 +1,63 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+     http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+     http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:application.properties"/>
+    <!--Db connection profiles-->
+    <beans profile="default">
+        <bean id="dataSource" class="org.h2.jdbcx.JdbcDataSource">
+            <property name="url" value="${db.data-source.url}"/>
+            <property name="user" value="${db.data-source.user}"/>
+            <property name="password" value="${db.data-source.password}"/>
+        </bean>
+    </beans>
+    <beans profile="jndi">
+        <jee:jndi-lookup id="dataSource"
+                         jndi-name="jdbc/LocalDatabaseName"
+                         expected-type="javax.sql.DataSource"/>
+    </beans>
+    <beans profile="c3p0">
+        <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+            <property name="driverClass" value="${db.data-source}"/>
+            <property name="jdbcUrl" value="${db.data-source.url}"/>
+            <property name="user" value="${db.data-source.user}"/>
+            <property name="password" value="${db.data-source.password}"/>
+            <!--https://www.mchange.com/projects/c3p0/#configuring_statement_pooling-->
+            <property name="maxPoolSize"
+                      value="10"/><!--Probably should be equal to thread pool size if each thread ask connections frequently-->
+            <property name="minPoolSize" value="1"/>
+            <property name="maxStatements" value="60"/><!--maxPoolSize * maxStatementsPerConnection-->
+            <!--a bit more than the number of PreparedStatements  application frequently uses-->
+            <property name="maxStatementsPerConnection" value="6"/>
+            <!--https://www.mchange.com/projects/c3p0/#configuring_connection_testing-->
+            <!--com.mchange.v2.c3p0.impl.C3P0Defaults.*-->
+            <property name="testConnectionOnCheckout" value="true"/><!--default: false-->
+            <property name="testConnectionOnCheckin" value="true"/><!--default: false-->
+            <!--idleConnectionTestPeriod in seconds!-->
+            <property name="idleConnectionTestPeriod" value="600"/><!--default: 0  //idle connections never tested-->
+            <!--checkoutTimeout in milliseconds WTF?!-->
+            <property name="checkoutTimeout" value="600"/><!--default: 0  //waits indefinitely-->
+            <!--unreturnedConnectionTimeout in seconds again!-->
+            <property name="unreturnedConnectionTimeout"
+                      value="600"/><!--default: 0  //no limit to forgotten connections-->
+            <!--debugUnreturnedConnectionStackTraces = true
+            will sout where connection destroyed by unreturnedConnectionTimeout was checked out-->
+        </bean>
+    </beans>
+    <beans profile="pgConnection">
+        <bean id="dataSource" class="org.postgresql.ds.PGSimpleDataSource">
+            <property name="serverNames" value="localhost"/>
+            <property name="databaseName" value="dog"/>
+            <property name="user" value="${db.data-source.user}"/>
+            <property name="password" value="${db.data-source.password}"/>
+            <property name="prepareThreshold" value="1"/>
+            <property name="preparedStatementCacheQueries" value="0x7fffffff"/>
+            <property name="preparedStatementCacheSizeMiB" value="0x7fffffff"/>
+        </bean>
+    </beans>
+</beans>

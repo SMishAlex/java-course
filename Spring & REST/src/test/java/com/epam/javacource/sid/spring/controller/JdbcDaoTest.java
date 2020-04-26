@@ -26,43 +26,6 @@ public class JdbcDaoTest extends AbstractTestNGSpringContextTests {
     @Autowired
     Dao<Dog> dogDao;
 
-    @BeforeTest
-    public static void setUpDataSource() throws Exception {
-        try {
-            System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
-            System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
-
-            final DataSourceFactory dataSourceFactory = new DataSourceFactory();
-            final Properties properties = new Properties();
-            properties.put("name", "jdbc/DatabaseName");
-            properties.put("auth", "Container");
-            properties.put("type", "javax.sql.DataSource");
-            properties.put("username", "dog");
-            properties.put("password", "dog");
-            properties.put("url", "jdbc:postgresql://localhost:5432/dog");
-            properties.put("driverClassName", "org.postgresql.Driver");
-            properties.put("initialSize", "20");
-            properties.put("maxWaitMillis", "15000");
-            properties.put("maxTotal", "75");
-            properties.put("maxIdle", "20");
-            properties.put("maxAge", "7200000");
-            properties.put("testOnBorrow", "true");
-            properties.put("validationQuery", "select 1");
-            final DataSource dataSource = dataSourceFactory.createDataSource(properties);
-
-            InitialContext ic = new InitialContext();
-
-            ic.createSubcontext("java:comp");
-            ic.createSubcontext("java:comp/env");
-            ic.createSubcontext("java:comp/env/jdbc");
-            ic.createSubcontext("java:comp/env/jdbc/LocalDatabaseName");
-
-            ic.rebind("java:comp/env/jdbc/LocalDatabaseName", dataSource);
-        } catch (NamingException ex) {
-            ex.printStackTrace();
-        }
-    }
-
     @Test
     public void whenDogIsValidNoExceptionsProvided() {
         Dog validDog = getValidDog();

@@ -1,26 +1,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:jee="http://www.springframework.org/schema/jee"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/mvc
-    https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context
-    https://www.springframework.org/schema/context/spring-context.xsd
-    http://www.springframework.org/schema/tx
-    http://www.springframework.org/schema/tx/spring-tx.xsd
-    http://www.springframework.org/schema/aop
-    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
+    https://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-
-    <context:property-placeholder location="classpath:application.properties"/>
-    <bean id="dogDao" class="com.epam.javacource.sid.spring.dao.JdbcDogDao">
-        <constructor-arg>
-            <bean class="org.springframework.jdbc.core.JdbcTemplate">
-                <constructor-arg ref="dataSource"/>
-            </bean>
-        </constructor-arg>
-    </bean>
+    <!--beans: dataSource.-->
+    <import resource="data-source-bean-config.xml"/>
+    <import resource="jdbc-config.xml"/>
+    <import resource="hibernate-bean-config.xml"/>
     <bean id="someController" class="com.epam.javacource.sid.spring.controller.DogController">
         <constructor-arg ref="dogService"/>
     </bean>
@@ -38,111 +25,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
     <!--Proxy profiles-->
-    <beans profile="default">
-        <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
-            <constructor-arg ref="dogDao"/>
-        </bean>
-        <!--Check that connection is really transactional:
-        DataSourceUtils.isConnectionTransactional(preparedStatement.getConnection(), dataSource)-->
-        <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-            <property name="dataSource" ref="dataSource"/>
-        </bean>
-        <tx:annotation-driven transaction-manager="txManager"/>
-    </beans>
-    <beans profile="aopTransaction">
-        <bean id="connectionHolder" class="com.epam.javacource.sid.spring.dao.JdbcConnectionHolder">
-            <constructor-arg ref="dataSource"/>
-        </bean>
-        <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
-            <constructor-arg ref="dogDao"/>
-        </bean>
-        <bean id="transactionalAdvice" class="com.epam.javacource.sid.spring.aop.aspect.SpringAspect">
-            <constructor-arg ref="connectionHolder"/>
-        </bean>
-        <aop:config>
-            <aop:aspect id="transactionalAspect" ref="transactionalAdvice">
-                <aop:pointcut id="transactionalMethodsCalls"
-                              expression="@annotation(com.epam.javacource.sid.spring.aop.annotations.IDontUseTryWithResourcesPleaseLetMeBeTransactional)"/>
-
-                <aop:before method="before" pointcut-ref="transactionalMethodsCalls"/>
-                <aop:after-returning method="afterReturning" pointcut-ref="transactionalMethodsCalls"/>
-                <aop:after-throwing method="afterThrowing" pointcut-ref="transactionalMethodsCalls"/>
-            </aop:aspect>
-        </aop:config>
-    </beans>
-    <beans profile="dynamicProxy">
-        <bean id="connectionHolder" class="com.epam.javacource.sid.spring.dao.JdbcConnectionHolder">
-            <constructor-arg ref="dataSource"/>
-        </bean>
-        <bean id="dogService" class="com.epam.javacource.sid.spring.service.proxy.ProxyFactory"
-              factory-method="createDynamicProxy">
-            <constructor-arg index="0" ref="connectionHolder"/>
-            <constructor-arg index="1">
-                <bean class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
-                    <constructor-arg ref="dogDao"/>
-                </bean>
-            </constructor-arg>
-            <constructor-arg name="proxyType" value="com.epam.javacource.sid.spring.service.DogService"/>
-        </bean>
-    </beans>
-    <beans profile="cglibProxy">
-        <bean id="dogServiceProxy" class="com.epam.javacource.sid.spring.service.proxy.ProxyFactory"
-              factory-method="createCglibProxy">
-            <constructor-arg index="0" ref="connectionHolder"/>
-            <constructor-arg index="1" ref="dogService"/>
-        </bean>
-    </beans>
-    <!--Db connection profiles-->
-    <beans profile="default">
-        <jee:jndi-lookup id="dataSource"
-                         jndi-name="jdbc/LocalDatabaseName"
-                         expected-type="javax.sql.DataSource"/>
-    </beans>
-    <beans profile="c3p0">
-        <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-            <property name="driverClass" value="${db.data-source}"/>
-            <property name="jdbcUrl" value="${db.data-source.url}"/>
-            <property name="user" value="${db.data-source.user}"/>
-            <property name="password" value="${db.data-source.password}"/>
-            <!--https://www.mchange.com/projects/c3p0/#configuring_statement_pooling-->
-            <property name="maxPoolSize"
-                      value="10"/><!--Probably should be equal to thread pool size if each thread ask connections frequently-->
-            <property name="minPoolSize" value="1"/>
-            <property name="maxStatements" value="60"/><!--maxPoolSize * maxStatementsPerConnection-->
-            <!--a bit more than the number of PreparedStatements  application frequently uses-->
-            <property name="maxStatementsPerConnection" value="6"/>
-            <!--https://www.mchange.com/projects/c3p0/#configuring_connection_testing-->
-            <!--com.mchange.v2.c3p0.impl.C3P0Defaults.*-->
-            <property name="testConnectionOnCheckout" value="true"/><!--default: false-->
-            <property name="testConnectionOnCheckin" value="true"/><!--default: false-->
-            <!--idleConnectionTestPeriod in seconds!-->
-            <property name="idleConnectionTestPeriod" value="600"/><!--default: 0  //idle connections never tested-->
-            <!--checkoutTimeout in milliseconds WTF?!-->
-            <property name="checkoutTimeout" value="600"/><!--default: 0  //waits indefinitely-->
-            <!--unreturnedConnectionTimeout in seconds again!-->
-            <property name="unreturnedConnectionTimeout"
-                      value="600"/><!--default: 0  //no limit to forgotten connections-->
-            <!--debugUnreturnedConnectionStackTraces = true
-            will sout where connection destroyed by unreturnedConnectionTimeout was checked out-->
-
-        </bean>
-    </beans>
-    <beans profile="pgConnection">
-        <bean id="dataSource" class="org.postgresql.ds.PGSimpleDataSource">
-            <property name="serverNames" value="localhost"/>
-            <property name="databaseName" value="dog"/>
-            <property name="user" value="${db.data-source.user}"/>
-            <property name="password" value="${db.data-source.password}"/>
-            <property name="prepareThreshold" value="1"/>
-            <property name="preparedStatementCacheQueries" value="0x7fffffff"/>
-            <property name="preparedStatementCacheSizeMiB" value="0x7fffffff"/>
-        </bean>
-    </beans>
-    <beans profile="h2Connection">
-        <bean id="dataSource" class="org.h2.jdbcx.JdbcDataSource">
-            <property name="url" value="jdbc:h2:~/dog"/>
-            <property name="user" value="${db.data-source.user}"/>
-            <property name="password" value="${db.data-source.password}"/>
-        </bean>
-    </beans>
+    <bean id="dogService" class="com.epam.javacource.sid.spring.service.impl.DogServiceImpl">
+        <constructor-arg ref="dogDao"/>
+    </bean>
 </beans>
