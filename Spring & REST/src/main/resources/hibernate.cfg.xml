@@ -9,7 +9,9 @@
         <!-- Echo the SQL to stdout -->
         <property name="show_sql">true</property>
         <!-- Drop and re-create the database schema on startup -->
+        <property name="hbm2ddl.auto">update</property>
 
         <mapping resource="Dog.hbm.xml"/>
+        <mapping class="com.epam.javacource.sid.spring.controller.HibernateFlashModeTest$DogWithAutoId"/>
     </session-factory>
 </hibernate-configuration>

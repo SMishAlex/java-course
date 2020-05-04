@@ -1,10 +1,10 @@
 <hibernate-mapping package="com.epam.javacource.sid.spring.model">
-    <class name="Dog" table="dog">
+    <class name="Dog" table="dogs">
         <id name="id" type="int" column="id">
-            <generator class="native"/>
+            <generator class="identity"/>
         </id>
         <property name="name" column="name"/>
-        <property name="dateOfBirth" column="date_of_birth"/>
+        <property name="dateOfBirth" column="dateOfBirth"/>
         <property name="height" column="height"/>
         <property name="weight" column="weight"/>
     </class>

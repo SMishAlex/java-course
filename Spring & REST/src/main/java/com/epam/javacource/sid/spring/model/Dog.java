@@ -18,15 +18,12 @@ import java.time.LocalDate;
 public class Dog {
     @Positive
     private Integer id;
-    @NotNull
     @Size(max = 100, min = 1)
     private String name;
     @Past
     private LocalDate dateOfBirth;
-    @NotNull
     @Positive
     private Long height;
-    @NotNull
     @Positive
     private Long weight;
 
