@@ -56,13 +56,18 @@ public class HibernateFlashModeTest extends AbstractTransactionalTestNGSpringCon
         dog.setHeight(100L);
         dog.setWeight(100L);
         System.out.println(dog);
-        System.out.println("Call save method");
+        System.out.println("Calling save method");
         session.save(dog);
         System.out.println(dog);
         if (flushDirectly) {
-            System.out.println("Call flush method");
+            System.out.println("Calling flush method");
             session.flush();
         }
+        System.out.println("Calling select");
+        //flushMode=ALWAYS
+        //Hibernate: insert into dogs (dateOfBirth, height, name, weight, id) values (?, ?, ?, ?, ?)
+        //Hibernate: SELECT * FROM dogs
+        final List list = session.createNativeQuery("SELECT * FROM dogs").list();
 
         System.out.println("Transaction ends");
     }
