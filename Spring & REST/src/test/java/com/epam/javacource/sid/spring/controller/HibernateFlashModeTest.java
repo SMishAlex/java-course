@@ -29,6 +29,17 @@ public class HibernateFlashModeTest extends AbstractTransactionalTestNGSpringCon
     @Autowired
     SessionFactory sessionFactory;
 
+    @Test
+    public void whenBatchModeIsOn() {
+        final Session currentSession = sessionFactory.getCurrentSession();
+        currentSession.setProperty("hibernate.jdbc.batch_size", 5);
+        for (int i = 0; i < 10; i++) {
+            final AbstractDog dog = getDog(DogWithAutoId.class);
+            currentSession.save(dog);
+        }
+        currentSession.flush();
+    }
+
     @DataProvider(name = "flashModesAndEntities", parallel = false)
     public static Object[][] dataProvider() {
         final List<Class<? extends AbstractDog>> dogClasses =
@@ -51,10 +62,7 @@ public class HibernateFlashModeTest extends AbstractTransactionalTestNGSpringCon
         Session session = sessionFactory.getCurrentSession();
         session.setHibernateFlushMode(flushMode);
 
-        AbstractDog dog = dogClass.newInstance();
-        dog.setName("DogForTest");
-        dog.setHeight(100L);
-        dog.setWeight(100L);
+        AbstractDog dog = getDog(dogClass);
         System.out.println(dog);
         System.out.println("Calling save method");
         session.save(dog);
@@ -70,6 +78,15 @@ public class HibernateFlashModeTest extends AbstractTransactionalTestNGSpringCon
         final List list = session.createNativeQuery("SELECT * FROM dogs").list();
 
         System.out.println("Transaction ends");
+    }
+
+    @SneakyThrows
+    private AbstractDog getDog(Class<? extends AbstractDog> dogClass) {
+        AbstractDog dog = dogClass.newInstance();
+        dog.setName("DogForTest");
+        dog.setHeight(100L);
+        dog.setWeight(100L);
+        return dog;
     }
 
 
