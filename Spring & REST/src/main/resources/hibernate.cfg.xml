@@ -13,5 +13,7 @@
 
         <mapping resource="Dog.hbm.xml"/>
         <mapping class="com.epam.javacource.sid.spring.controller.HibernateFlashModeTest$DogWithAutoId"/>
+        <mapping class="com.epam.javacource.sid.spring.controller.HibernateFlashModeTest$DogWithSequenceId"/>
+        <mapping class="com.epam.javacource.sid.spring.controller.HibernateFlashModeTest$DogWithIdentityId"/>
     </session-factory>
 </hibernate-configuration>
