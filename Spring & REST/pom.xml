@@ -4,7 +4,7 @@
     <artifactId>rest-application</artifactId>
     <version>1.0</version>
     <properties>
-        <jackson-version>2.10.1</jackson-version>
+        <jackson-version>2.13.4.1</jackson-version>
         <spring.version>5.2.2.RELEASE</spring.version>
         <javax.el.version>3.0.0</javax.el.version>
         <jooq.version>3.13.1</jooq.version>
